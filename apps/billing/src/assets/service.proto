@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package ultimate_backend.billing;
+
+message Message {
+  string body = 1;
+}
+
+service BillingService {
+  rpc SayHello(Message) returns (Message) {}
+}

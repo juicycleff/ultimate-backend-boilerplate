@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package ultimate_backend.tenant;
+
+message Message {
+  string body = 1;
+}
+
+service TenantService {
+  rpc SayHello(Message) returns (Message) {}
+}

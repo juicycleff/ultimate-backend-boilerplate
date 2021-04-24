@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package ultimate_backend.account;
+
+message Message {
+  string body = 1;
+}
+
+service AccountService {
+  rpc SayHello(Message) returns (Message) {}
+}
