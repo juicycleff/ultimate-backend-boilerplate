@@ -1,0 +1,48 @@
+datastore:
+  dbUrl: "postgres://rex@localhost:5432/{{dbName}}"
+  dbName: "guardian"
+  redisUrl: "redis://127.0.0.1:6379"
+  retryAttempts: 6
+  retryDelays: 4
+
+security:
+  authSalt: "CHANGEME"
+  jwtExpiration: 24
+  jwtKey: "4125442A472D4B614E645267556B58703273357638792F423F4528482B4D6251"
+  jwtIssuer: "guardian"
+  sessionKey: "4125442A472D4B614E645267556B58703273357638792F423F4528482B4D6251"
+  sessionName: "auth"
+  sessionSecure: false
+  sessionMaxAgeSecs: 4000
+  sessionPath: "/"
+
+  passwordStrength: 3
+
+  onetimeCodeDuration: 120
+  onetimeCodeLength: 6
+
+features:
+  api:
+    enableGraphql: true
+  auth:
+    enableSignup: true
+    enableLogin: true
+    enableJwt: true
+    enableSession: true
+    enableAnnonymous_auth: true
+    loginRequireConfirmation: true
+    loginWithSignup: true
+    securityLevel: Simple
+
+logging:
+  sentry:
+    dsn: "https://843971de94ef48aa98cf0e89497c0a55@o439891.ingest.sentry.io/5500481"
+    environment: Staging
+
+integration:
+  sendgrid:
+    apiKey: "SG.my.api.key"
+
+files:
+  securityCert: "cert.pem"
+  securityKey: "key.pem"

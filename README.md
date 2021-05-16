@@ -1,6 +1,7 @@
 # Ultimate Backend Boilerplate
 
 This project was generated using [UB](https://github.com/juicycleff/ultimate-backend).
+
 ## Adding capabilities to your workspace
 
 Nx supports many plugins which add capabilities for developing different types of applications and different tools.

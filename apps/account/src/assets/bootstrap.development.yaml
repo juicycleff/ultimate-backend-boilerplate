@@ -1,2 +1,13 @@
-name: account
+name: accounts
 port: 3001
+
+transport:
+  grpc:
+
+
+loadbalancer:
+  services:
+    - strategy: 'RoundRobinStrategy'
+      name: 'example'
+    - strategy: 'RoundRobinStrategy'
+      name: 'adv-example'

@@ -1,0 +1,25 @@
+name: guardian
+port: 5000
+description: guardian api spec
+tag: guardian-auth
+version: latest
+
+transport:
+  grpc:
+    package: 'guardian'
+    protoPath: 'service.proto'
+    url: 0.0.0.0:{{port}}
+
+clients:
+  redis:
+    useCluster: false
+    redisOptions:
+      host: 'localhost'
+      port: 6379
+
+loadbalancer:
+  services:
+    - strategy: 'RoundRobinStrategy'
+      name: 'example'
+    - strategy: 'RoundRobinStrategy'
+      name: 'adv-example'

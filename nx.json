@@ -24,6 +24,7 @@
     "common": { "tags": [] },
     "tenant": { "tags": [] },
     "account": { "tags": [] },
-    "billing": { "tags": [] }
+    "billing": { "tags": [] },
+    "guardian": { "tags": [] }
   }
 }
