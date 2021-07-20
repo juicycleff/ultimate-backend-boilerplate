@@ -1,7 +1,7 @@
-import { NestFactory } from "@nestjs/core";
-import { UBServiceFactory } from "@ultimate-backend/core";
+import { NestFactory } from '@nestjs/core';
+import { UBServiceFactory } from '@ultimate-backend/core';
 
-import { AppModule } from "./app/app.module";
+import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,7 +10,7 @@ async function bootstrap() {
     .withSwagger()
     .withGrpc()
     .withPoweredBy()
-    .withPrefix("api")
+    .withPrefix('api')
     .start();
 }
 

@@ -1,1 +1,1 @@
-export * from "./account.command";
+export * from './account.command';

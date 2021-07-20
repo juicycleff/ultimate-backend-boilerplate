@@ -1,9 +1,8 @@
 module.exports = {
   projects: [
-    "<rootDir>/libs/common",
-    "<rootDir>/apps/tenant",
-    "<rootDir>/apps/accounts",
-    "<rootDir>/apps/billing",
-    "<rootDir>/apps/guardian",
+    '<rootDir>/libs/common',
+    '<rootDir>/apps/tenant',
+    '<rootDir>/apps/guardians',
+    '<rootDir>/apps/billing',
   ],
 };

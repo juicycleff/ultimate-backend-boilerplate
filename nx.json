@@ -1,13 +1,18 @@
 {
   "implicitDependencies": {
     "workspace.json": "*",
-    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
     "tsconfig.base.json": "*",
     "tslint.json": "*",
     ".eslintrc.json": "*",
     "nx.json": "*"
   },
-  "affected": { "defaultBase": "master" },
+  "affected": {
+    "defaultBase": "master"
+  },
   "npmScope": "ub-boilerplate",
   "tasksRunnerOptions": {
     "default": {
@@ -21,10 +26,17 @@
     }
   },
   "projects": {
-    "common": { "tags": [] },
-    "tenant": { "tags": [] },
-    "account": { "tags": [] },
-    "billing": { "tags": [] },
-    "guardian": { "tags": [] }
+    "billing": {
+      "tags": []
+    },
+    "common": {
+      "tags": []
+    },
+    "guardian": {
+      "tags": []
+    },
+    "tenant": {
+      "tags": []
+    }
   }
 }

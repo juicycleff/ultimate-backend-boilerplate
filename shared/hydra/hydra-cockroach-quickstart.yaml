@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  hydra-migrate:
+    image: oryd/hydra:v1.10.2
+    command: migrate -c /etc/config/hydra/hydra.yaml sql -e --yes
+    volumes:
+      - type: bind
+        source: ./config
+        target: /etc/config/hydra
+    depends_on:
+      - cockroachd
+    environment:
+      - DSN=cockroach://root@cockroachd:26257/defaultdb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - SECRETS_SYSTEM=Sz17ndzpR4eL7TMyiDT9a7vDA2f7R3fM
+    networks:
+      - intranet
+
+  hydra:
+    image: oryd/hydra:v1.10.2
+    ports:
+      - '4444:4444' # Public port
+      - '4445:4445' # Admin port
+      - '5555:5555' # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yaml all --dangerous-force-http
+    volumes:
+      - type: bind
+        source: ./config
+        target: /etc/config/hydra
+    environment:
+      - DSN=cockroach://root@cockroachd:26257/defaultdb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - SECRETS_SYSTEM=Sz17ndzpR4eL7TMyiDT9a7vDA2f7R3fM
+    depends_on:
+      - cockroachd
+      - hydra-migrate
+    networks:
+      - intranet
+
+  consent:
+    environment:
+      - HYDRA_ADMIN_URL=http://hydra:4445
+    image: oryd/hydra-login-consent-node:v1.10.2
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    networks:
+      - intranet
+
+  cockroachd:
+    image: cockroachdb/cockroach:v2.1.6
+    ports:
+      - '26257:26257'
+    command: start --insecure
+    networks:
+      - intranet
+
+networks:
+  intranet: {}

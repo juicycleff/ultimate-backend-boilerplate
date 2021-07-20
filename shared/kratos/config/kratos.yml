@@ -1,0 +1,175 @@
+version: v0.7.0-alpha.1
+
+dsn: postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+
+## Ory Kratos Configuration
+identity:
+  default_schema_url: file:///etc/config/kratos/identity.schema.json
+
+## selfservice ##
+selfservice:
+  default_browser_return_url: http://127.0.0.1:4455/
+  whitelisted_return_urls:
+    - http://127.0.0.1:4455
+    - http://127.0.0.1:3001
+
+  ## flows ##
+  flows:
+    logout:
+      after:
+        default_browser_return_url: http://127.0.0.1:4455/dashboard
+
+    registration:
+      lifespan: 5h
+      ui_url: http://127.0.0.1:4455/signup
+      after:
+        password:
+          hooks:
+            - hook: session
+
+    login:
+      lifespan: 1h
+      ui_url: http://127.0.0.1:4455/login
+
+    ## Email and Phone Verification and Account Activation Configuration ##
+    verification:
+      ui_url: http://127.0.0.1:4455/verify
+      lifespan: 1h
+      enabled: false
+      after:
+        default_browser_return_url: http://127.0.0.1:4455/
+
+    ## Account Recovery Configuration ##
+    recovery:
+      ui_url: http://127.0.0.1:4455/verify
+
+      lifespan: 1h
+
+      enabled: false
+
+    ## error ##
+    error:
+      ui_url: http://127.0.0.1:4455/kratos-error
+
+    ## settings ##
+    settings:
+      lifespan: 1h
+
+      privileged_session_max_age: 1h
+
+      ui_url: http://127.0.0.1:4455/user/settings
+
+  ## methods ##
+  methods:
+    password:
+      ## Password Configuration ##
+      # Define how passwords are validated.
+      config:
+        ## Allow Password Breaches ##
+        # Defines how often a password may have been breached before it is rejected.
+        max_breaches: 0
+
+        ## Ignore Lookup Network Errors ##
+        # If set to false the password validation fails when the network or the Have I Been Pwnd API is down.
+        ignore_network_errors: false
+
+      ## Enables Username/Email and Password Method ##
+      enabled: true
+
+    profile:
+      enabled: true
+
+serve:
+  public:
+    base_url: http://127.0.0.1:4433/
+
+  admin:
+    base_url: http://127.0.0.1:4434/
+
+## tracing ##
+tracing:
+  service_name: Ory Kratos
+
+  providers:
+    zipkin:
+      server_url: http://127.0.0.1:9411/api/v2/spans
+
+    jaeger:
+      propagation: jaeger
+      sampling:
+        type: const
+        value: 1
+        server_url: http://127.0.0.1:5778/sampling
+      local_agent_address: 127.0.0.1:6831
+
+  ## provider ##
+  # Set this to the tracing backend you wish to use. Supports Jaeger, Zipkin and DataDog. If omitted or empty, tracing will be disabled. Use environment variables to configure DataDog (see https://docs.datadoghq.com/tracing/setup/go/#configuration).
+  # provider: zipkin
+
+## Log ##
+# Configure logging using the following options. Logging will always be sent to stdout and stderr.
+log:
+  ## Leak Sensitive Log Values ##
+  # If set will leak sensitive values (e.g. emails) in the logs.
+  leak_sensitive_values: true
+
+  format: json
+
+  ## level ##
+  # Debug enables stack traces on errors. Can also be set using environment variable LOG_LEVEL.
+  # Default value: info
+  #
+  # One of:
+  # - trace
+  # - debug
+  # - info
+  # - warning
+  # - error
+  # - fatal
+  # - panic
+  level: trace
+
+## secrets ##
+#
+secrets:
+  cookie:
+    - ipsumipsumipsumi
+
+  default:
+    - ipsumipsumipsumi
+
+## Hashing Algorithm Configuration ##
+hashers:
+  argon2:
+    iterations: 1
+    parallelism: 1
+    salt_length: 16
+    key_length: 16
+    expected_duration: 0ns
+    expected_deviation: 0ns
+    dedicated_memory: 0B
+    memory: 0B
+
+  bcrypt:
+    cost: 4
+  algorithm: argon2
+
+## session ##
+session:
+  cookie:
+    persistent: true
+    same_site: Lax
+  lifespan: 1h
+
+dev: true
+expose-metrics-port: 4434
+
+## Courier configuration ##
+# The courier is responsible for sending and delivering messages over email, sms, and other means.
+courier:
+  ## SMTP Configuration ##
+  # Configures outgoing emails using the SMTP protocol.
+  smtp:
+    connection_uri: smtps://fgf:gfgf@fgfg.mailgun.org:587
+    from_name: Bob
+    from_address: aaa@a.aa

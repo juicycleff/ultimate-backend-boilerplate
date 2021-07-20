@@ -1,14 +1,11 @@
+
 syntax = "proto3";
-package guardian;
+package ultimate_backend.account;
 
 message Message {
   string body = 1;
 }
 
 service AccountService {
-  rpc SayHello(Message) returns (Message) {}
-}
-
-service SessionService {
   rpc SayHello(Message) returns (Message) {}
 }

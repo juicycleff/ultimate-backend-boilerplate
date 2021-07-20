@@ -1,14 +1,14 @@
 module.exports = {
-  displayName: "billing",
-  preset: "../../jest.preset.js",
+  displayName: 'billing',
+  preset: '../../jest.preset.js',
   globals: {
-    "ts-jest": {
-      tsConfig: "<rootDir>/tsconfig.spec.json",
+    'ts-jest': {
+      tsConfig: '<rootDir>/tsconfig.spec.json',
     },
   },
   transform: {
-    "^.+\\.[tj]s$": "ts-jest",
+    '^.+\\.[tj]s$': 'ts-jest',
   },
-  moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/apps/billing",
+  moduleFileExtensions: ['ts', 'js', 'html'],
+  coverageDirectory: '../../coverage/apps/billing',
 };

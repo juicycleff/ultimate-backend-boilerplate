@@ -1,11 +1,21 @@
-
 syntax = "proto3";
 package ultimate_backend.tenant;
 
-message Message {
-  string body = 1;
+message CallRequest {
+  string methodName = 1;
+  string verb = 2;
+  repeated bytes body = 3;
+}
+
+message CallResponse {
+  string methodName = 1;
+  string verb = 2;
+  oneof body {
+    bytes ok = 3;
+    bytes error = 4;
+  }
 }
 
 service TenantService {
-  rpc SayHello(Message) returns (Message) {}
+  rpc Call(CallRequest) returns (CallResponse) {}
 }

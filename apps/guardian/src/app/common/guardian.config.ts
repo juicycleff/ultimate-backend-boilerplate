@@ -1,73 +1,65 @@
-export interface GuardianConfig {
-  DatastoreConfig: DatastoreConfig;
-  security: SecurityConfig;
-  features: FeaturesConfig;
-  logging: LoggingConfig;
-  integration: IntegrationConfig;
-  files: FilesConfig;
-}
+import { Field, ObjectType } from '@nestjs/graphql';
+import { SecurityConfig } from '@ub-boilerplate/common';
 
-export interface DatastoreConfig {
-  dbUrl: string;
-  dbName: string;
-  redisUrl: string;
-  retryAttempts?: number;
-  retryDelays?: number;
-}
-
-export interface SecurityConfig {
-  authSalt: string;
-  jwtExpiration: number;
-  jwtKey: string;
-  jwtIssuer: string;
-  sessionKey: string;
-  sessionName: string;
-  sessionSecure: boolean;
-  sessionMaxAgeSecs: number;
-  sessionPath: string;
-  passwordStrength: number;
-  onetimeCodeDuration: number;
-  onetimeCodeLength: number;
-}
-
-export interface FeaturesConfig {
-  api: Api;
-  auth: Auth;
-}
-
-export interface Api {
+@ObjectType()
+export class ApiFeaturesConfig {
+  @Field()
   enableGraphql: boolean;
 }
 
-export interface Auth {
-  enableSignup: boolean;
-  enableLogin: boolean;
+@ObjectType()
+export class AuthFeaturesConfig {
+  @Field()
+  enabled: boolean;
+
+  @Field()
   enableJwt: boolean;
+
+  @Field()
   enableSession: boolean;
+
+  @Field()
   enableAnonymousAuth: boolean;
+
+  @Field()
   loginRequireConfirmation: boolean;
-  loginWithSignup: boolean;
+
+  @Field()
   securityLevel: string;
 }
 
-export interface LoggingConfig {
-  sentry: Sentry;
+export class LoggingConfig {
+  sentry: SentryLoggingConfig;
 }
 
-export interface Sentry {
+@ObjectType()
+export class FeaturesConfig {
+  @Field(() => ApiFeaturesConfig)
+  api: ApiFeaturesConfig;
+
+  @Field(() => AuthFeaturesConfig)
+  auth: AuthFeaturesConfig;
+}
+
+export class SentryLoggingConfig {
   dsn: string;
   environment: string;
 }
 
-export interface IntegrationConfig {
-  sendgrid: Sendgrid;
-}
-
-export interface Sendgrid {
-  apiKey: string;
-}
-
-export interface FilesConfig {
+export class FilesConfig {
   securityCert: string;
   securityKey: string;
+}
+
+@ObjectType()
+export class GuardianConfig {
+  @Field(() => SecurityConfig)
+  security: SecurityConfig;
+
+  @Field(() => FeaturesConfig)
+  features: FeaturesConfig;
+
+  logging: LoggingConfig;
+
+  files: FilesConfig;
 }

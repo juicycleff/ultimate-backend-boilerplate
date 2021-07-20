@@ -1,17 +1,21 @@
-import { NestFactory } from "@nestjs/core";
-import { UBServiceFactory } from "@ultimate-backend/core";
+import { NestFactory } from '@nestjs/core';
+import { UBServiceFactory } from '@ultimate-backend/core';
 
-import { AppModule } from "./app/app.module";
+import { AppModule } from './app/app.module';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
 
   await UBServiceFactory.create(app)
     .withSwagger()
-    .withGrpc()
+    // .withGrpc()
 
-    .withPoweredBy()
-    .withPrefix("api")
+    // .withPoweredBy()
+    .withPrefix('api')
     .start();
 }
 

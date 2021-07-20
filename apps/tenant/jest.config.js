@@ -1,14 +1,14 @@
 module.exports = {
-  displayName: "tenant",
-  preset: "../../jest.preset.js",
+  displayName: 'tenant',
+  preset: '../../jest.preset.js',
   globals: {
-    "ts-jest": {
-      tsConfig: "<rootDir>/tsconfig.spec.json",
+    'ts-jest': {
+      tsConfig: '<rootDir>/tsconfig.spec.json',
     },
   },
   transform: {
-    "^.+\\.[tj]s$": "ts-jest",
+    '^.+\\.[tj]s$': 'ts-jest',
   },
-  moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/apps/tenant",
+  moduleFileExtensions: ['ts', 'js', 'html'],
+  coverageDirectory: '../../coverage/apps/tenant',
 };
