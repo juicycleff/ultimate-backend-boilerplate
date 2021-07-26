@@ -1,9 +1,43 @@
-name: accounts
-port: 3001
+name: guardian
+port: 5000
+host: 0.0.0.0
+description: guardian api spec
+tag: guardian-svc
+version: latest
 
-client:
+setup:
+  cookie:
+    secret: 'my-secret-looking-good'
+    domain: 127.0.0.1
+    path: /
+    # signed: false
+    # sameSite: lax
+
+clients:
   redis:
     useCluster: false
     redisOptions:
       host: 'localhost'
       port: 6379
+
+transport:
+  grpc:
+    package: 'guardian'
+    protoPath: 'service.proto'
+    url: 0.0.0.0:{{port}}
+
+swagger:
+  options:
+    auth:
+      authType: 'bearer'
+      option:
+        type: 'http'
+        scheme: 'bearer'
+        name: 'Authorization'
+
+loadbalancer:
+  services:
+    - strategy: 'RoundRobinStrategy'
+      name: 'example'
+    - strategy: 'RoundRobinStrategy'
+      name: 'adv-example'

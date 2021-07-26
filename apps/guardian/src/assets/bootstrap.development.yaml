@@ -2,7 +2,7 @@ name: guardian
 port: 5000
 host: 0.0.0.0
 description: guardian api spec
-tag: guardian-auth
+tag: guardian-svc
 version: latest
 
 setup:
@@ -30,7 +30,10 @@ swagger:
   options:
     auth:
       authType: 'bearer'
-      name: Authorization
+      option:
+        type: 'http'
+        scheme: 'bearer'
+        name: 'Authorization'
 
 loadbalancer:
   services:

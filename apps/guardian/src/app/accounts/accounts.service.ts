@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigValue } from '@ultimate-backend/config';
+import { AccountIdentity, Identity, KratosService } from '@ub-boilerplate/common';
 import { PasswordService } from '../password/password.service';
 import { CreateAccountRequest, UpdateAccountRequest } from './commands';
 import { FeaturesConfig } from '../common/guardian.config';
-import { Identity, KratosService } from '@ub-boilerplate/common';
 
 @Injectable()
 export class AccountsService {
@@ -40,11 +40,11 @@ export class AccountsService {
     }
   }
 
-  async passwordExpire(accountID: string): Promise<boolean> {
+  async passwordExpire(sessionId: string): Promise<boolean> {
     return false;
   }
 
-  async update(accountID: string, cmd: UpdateAccountRequest): Promise<any> {
+  async update(sessionId: string, cmd: UpdateAccountRequest): Promise<AccountIdentity> {
     const payload: Partial<any> = {};
 
     if (cmd.phoneNumber) {
@@ -59,15 +59,17 @@ export class AccountsService {
       payload.username = cmd.username;
     }
 
-    return null;
+    return this.kratos.updateProfile(sessionId, payload);
   }
 
-  async lock(accountID: string): Promise<boolean> {
-    return false;
+  async requestAccountRecovery(email: string, token?: string): Promise<boolean> {
+    const resp = await this.kratos.accountRecovery(email, token);
+    return !!resp;
   }
 
-  async unlock(accountID: string): Promise<boolean> {
-    return false;
+  async verifyAccount(email: string, token: string): Promise<boolean> {
+    const resp = await this.kratos.verifyAccount(email, token);
+    return !!resp;
   }
 
   async delete(identity: Identity): Promise<boolean> {

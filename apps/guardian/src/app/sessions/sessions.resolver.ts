@@ -1,5 +1,5 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { SessionMutations, SessionQueries } from './session.types';
+import { Mutation, Resolver } from '@nestjs/graphql';
+import { SessionMutations } from './session.types';
 
 @Resolver()
 export class SessionsResolver {
@@ -12,11 +12,6 @@ export class SessionsResolver {
     name: 'session',
   })
   sessionMutation(): SessionMutations {
-    return {};
-  }
-
-  @Query(() => SessionQueries)
-  session(): SessionQueries {
     return {};
   }
 }

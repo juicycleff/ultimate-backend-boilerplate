@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Post, Put, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateAccountRequest } from '../accounts/commands';
-import { CreateSessionRequest, UpdateSessionRequest } from './commands';
+import { CreateSessionRequest } from './commands';
 import { SessionResponse } from './queries';
 import { SessionsService } from './sessions.service';
 import { IFastifyReply, IFastifyRequest, Secure } from '@ub-boilerplate/common';
@@ -19,12 +19,6 @@ export class SessionsController {
     @Res({ passthrough: true }) res: IFastifyReply,
   ): Promise<SessionResponse> {
     return await this.sessionsService.create(body, req.identity, res);
-  }
-
-  @Secure({ claim: 'account' })
-  @Put('/')
-  update(@Body() body: UpdateSessionRequest) {
-    return;
   }
 
   @Secure({ claim: 'account' })

@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccountsService } from './accounts.service';
 import {
@@ -33,10 +23,7 @@ export class AccountsController {
    */
   @Get('/')
   @Secure({ claim: 'account' })
-  async getAccount(
-    @Auth() identity: Identity,
-    @Res() response: any,
-  ): Promise<AccountResponse> {
+  async getAccount(@Auth() identity: Identity): Promise<AccountResponse> {
     return this.kratos.whoami(identity.sessionId);
   }
 
@@ -53,30 +40,12 @@ export class AccountsController {
     @Param('accountId') accountId: string,
     @Body() body: UpdateAccountRequest,
   ): Promise<AccountResponse> {
-    const resp = await this.accountService.update(accountId, body);
-    return resp.toResponse();
+    return await this.accountService.update(accountId, body);
   }
 
   @Get('/available')
   async available(@Body() body: AccountAvailableRequest): Promise<boolean> {
     return await this.accountService.isAvailable(body.identity);
-  }
-
-  @Put('/import')
-  import() {
-    return;
-  }
-
-  @Secure({ claim: 'service' })
-  @Put('/:accountId/lock')
-  async lock(@Param('accountId') accountId: string): Promise<boolean> {
-    return await this.accountService.lock(accountId);
-  }
-
-  @Secure({ claim: 'service' })
-  @Put('/:accountId/unlock')
-  async unlock(@Param('accountId') accountId: string): Promise<boolean> {
-    return await this.accountService.unlock(accountId);
   }
 
   @Secure({ claim: 'service' })

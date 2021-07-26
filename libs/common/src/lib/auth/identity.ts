@@ -14,11 +14,22 @@ export class Identity {
   ) {}
 
   get accountID(): string {
-    return this.req.cookies.idtoken;
+    return this.getId();
   }
 
   get sessionId(): string {
-    return this.req.cookies.idtoken;
+    return this.getId();
+  }
+
+  getId() {
+    if (this.req.cookies.idtoken) return this.req.cookies.idtoken;
+
+    const authToken = (this.req.headers['Authorization'] ??
+      this.req.headers['authorization']) as string;
+    if (authToken && authToken.startsWith('Bearer ')) {
+      return authToken.substr(7, authToken.length);
+    }
+    return undefined;
   }
 
   async account(): Promise<AccountIdentity> {

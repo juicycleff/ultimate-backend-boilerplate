@@ -20,7 +20,7 @@ import { SecurityModule } from './security/security.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { RedisModule } from '@ultimate-backend/redis';
-import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLFederationModule } from '@nestjs/graphql';
 import { BullModule } from '@nestjs/bull';
 import { ConfigSource } from '@ultimate-backend/common';
 import { ConfigModule } from '@ultimate-backend/config';
@@ -68,7 +68,7 @@ import { AppResolver } from './app.resolver';
     BullModule.forRootAsync({
       useClass: BullConfig,
     }),
-    GraphQLModule.forRoot({
+    GraphQLFederationModule.forRoot({
       autoSchemaFile: true,
       tracing: true,
       fieldResolverEnhancers: ['guards'],

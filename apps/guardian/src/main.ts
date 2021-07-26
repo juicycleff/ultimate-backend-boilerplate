@@ -3,9 +3,6 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { UBServiceFactory } from '@ultimate-backend/core';
 
 import { AppModule } from './app/app.module';
-import { ConfigStore } from '@ultimate-backend/config';
-import { identityMiddleware } from '@ub-boilerplate/common';
-import { BootConfig } from '@ultimate-backend/bootstrap';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -13,7 +10,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  const builder = UBServiceFactory.create(app, true)
+  await UBServiceFactory.create(app, true)
     .withSwagger()
     .withPrefix('api/v1')
     .withValidation({
@@ -31,9 +28,8 @@ async function bootstrap() {
       },
     })
     // .withPoweredBy()
-    .withCookie();
-
-  await builder.start();
+    .withCookie()
+    .start();
 }
 
 (async () => await bootstrap())();

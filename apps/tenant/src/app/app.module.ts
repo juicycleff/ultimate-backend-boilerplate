@@ -12,7 +12,8 @@ import { MembersModule } from './members/members.module';
 @Module({
   imports: [
     BootstrapModule.forRoot({
-      filePath: path.resolve(__dirname, 'assets/bootstrap.development.yaml'),
+      filePath: path.resolve(__dirname, 'assets/bootstrap.yaml'),
+      enableEnv: true,
     }),
     ConfigModule.forRoot({
       load: [
@@ -22,11 +23,11 @@ import { MembersModule } from './members/members.module';
           envFilePath: path.resolve(__dirname, '/assets/dev.env'),
           prefix: 'ULTIMATE_BACKEND',
         },
-        {
+        /* {
           source: ConfigSource.Kubernetes,
           name: 'ultimate-backend-tenant-config',
           key: 'config.yml',
-        },
+        }, */
       ],
     }),
     KubernetesModule.forRoot(),

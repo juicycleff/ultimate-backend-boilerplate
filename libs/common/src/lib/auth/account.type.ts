@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { Identity } from '@ory/kratos-client';
 
@@ -96,6 +96,19 @@ export class AccountIdentityVerifiableAddress extends AccountIdentityRecoveryAdd
   })
   @ApiProperty()
   updatedAt: Date;
+}
+
+@InputType('IdentityName')
+@ObjectType()
+export class IdentityNameTraits {
+  /**
+   * @description ID field is a database generated unique identifier for an account
+   */
+  @Field({
+    description: 'ID field is a database generated unique identifier for an account',
+  })
+  @ApiProperty()
+  first: string;
 }
 
 @ObjectType()

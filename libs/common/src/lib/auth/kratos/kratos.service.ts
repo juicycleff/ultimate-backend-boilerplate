@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { HttpException, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { KRATOS_OPTIONS_PROVIDER, KratosModuleOptions } from './kratos.options';
 import {
   AdminApi,
@@ -7,6 +7,7 @@ import {
   SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum,
   SubmitSelfServiceRegistrationFlowWithPasswordMethodBodyMethodEnum,
   SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum,
+  SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum,
   V0alpha1Api,
 } from '@ory/kratos-client';
 import { axios } from '../../clients';
@@ -56,7 +57,6 @@ export class KratosService implements OnModuleInit {
   /**
    * Custom methods below
    */
-
   /**
    * @description Login with password. Basically a wrapper around kratos
    * @param identifier
@@ -85,16 +85,7 @@ export class KratosService implements OnModuleInit {
       return rsp.data;
     } catch (e) {
       if (e?.response?.data?.ui?.messages) {
-        const messages: string[] = [];
-        const codes: string[] = [];
-        e.response.data.ui.messages.map((message) => {
-          messages.push(message.text);
-          codes.push(message.id);
-        });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new ApolloError(messages, codes, e.response.data.ui.messages);
+        throw new HttpException(e.response.data.ui.messages, 400);
       }
       throw e;
     }
@@ -131,18 +122,8 @@ export class KratosService implements OnModuleInit {
 
       return rsp.data;
     } catch (e) {
-      console.log(e?.response?.data?.ui);
       if (e?.response?.data?.ui?.messages) {
-        const messages: string[] = [];
-        const codes: string[] = [];
-        e.response.data.ui.messages.map((message) => {
-          messages.push(message.text);
-          codes.push(message.id);
-        });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new ApolloError(messages, codes, e.response.data.ui.messages);
+        throw new HttpException(e.response.data.ui.messages, 400);
       }
       throw e;
     }
@@ -173,18 +154,8 @@ export class KratosService implements OnModuleInit {
 
       return rsp.data;
     } catch (e) {
-      console.log(e?.response?.data?.ui);
       if (e?.response?.data?.ui?.messages) {
-        const messages: string[] = [];
-        const codes: string[] = [];
-        e.response.data.ui.messages.map((message) => {
-          messages.push(message.text);
-          codes.push(message.id);
-        });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new ApolloError(messages, codes, e.response.data.ui.messages);
+        throw new HttpException(e.response.data.ui.messages, 400);
       }
       throw e;
     }
@@ -219,18 +190,8 @@ export class KratosService implements OnModuleInit {
 
       return rsp.data;
     } catch (e) {
-      console.log(e?.response?.data?.ui);
       if (e?.response?.data?.ui?.messages) {
-        const messages: string[] = [];
-        const codes: string[] = [];
-        e.response.data.ui.messages.map((message) => {
-          messages.push(message.text);
-          codes.push(message.id);
-        });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new ApolloError(messages, codes, e.response.data.ui.messages);
+        throw new HttpException(e.response.data.ui.messages, 400);
       }
       throw e;
     }
@@ -248,18 +209,8 @@ export class KratosService implements OnModuleInit {
 
       return rsp.data;
     } catch (e) {
-      console.log(e?.response?.data?.ui);
       if (e?.response?.data?.ui?.messages) {
-        const messages: string[] = [];
-        const codes: string[] = [];
-        e.response.data.ui.messages.map((message) => {
-          messages.push(message.text);
-          codes.push(message.id);
-        });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new ApolloError(messages, codes, e.response.data.ui.messages);
+        throw new HttpException(e.response.data.ui.messages, 400);
       }
       throw e;
     }
@@ -305,7 +256,78 @@ export class KratosService implements OnModuleInit {
     } catch (e) {
       if (e?.response?.data?.error) {
         const error = e?.response?.data?.error;
-        throw new ApolloError(error.reason, error.code, e.response.data.error);
+        throw new HttpException(error, error.code);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Get Server health. Basically a wrapper around kratos
+   */
+  async updateProfile(
+    xSessionToken?: string,
+    traits?: any,
+    options?: { csrfToken: string; flowOption: any },
+  ): Promise<AccountIdentity> {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceSettingsFlowWithoutBrowser(
+          xSessionToken,
+          options?.flowOption,
+        );
+
+      const rsp = await this.public_api.submitSelfServiceSettingsFlow(
+        flow.id,
+        xSessionToken,
+        {
+          method: SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum.Profile,
+          csrf_token: options.csrfToken,
+          traits,
+        },
+      );
+      return new AccountIdentity(rsp.data.identity);
+    } catch (e) {
+      if (e?.response?.data?.error) {
+        const error = e?.response?.data?.error;
+        throw new HttpException(error.reason, error.code);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Update account password. (Basically a wrapper around kratos)
+   * @param xSessionToken
+   * @param password
+   * @param options
+   */
+  async updatePassword(
+    xSessionToken: string,
+    password: string,
+    options?: { csrfToken: string; flowOption: any },
+  ): Promise<AccountIdentity> {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceSettingsFlowWithoutBrowser(
+          xSessionToken,
+          options?.flowOption,
+        );
+
+      const rsp = await this.public_api.submitSelfServiceSettingsFlow(
+        flow.id,
+        xSessionToken,
+        {
+          method: SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum.Password,
+          csrf_token: options.csrfToken,
+          password,
+        },
+      );
+      return new AccountIdentity(rsp.data.identity);
+    } catch (e) {
+      if (e?.response?.data?.error) {
+        const error = e?.response?.data?.error;
+        throw new HttpException(error.reason, error.code);
       }
       throw e;
     }

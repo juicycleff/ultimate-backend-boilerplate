@@ -1,2 +1,3 @@
 name: billing
-port: 3000
+port: 5002
+host: 0.0.0.0

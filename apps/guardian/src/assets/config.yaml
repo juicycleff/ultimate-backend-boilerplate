@@ -18,7 +18,7 @@ features:
 
 logging:
   sentry:
-    dsn: 'https://843971de94ef48aa98cf0e89497c0a55@o439891.ingest.sentry.io/5500481'
+    dsn: 'https://dgfdfg56jy53673o7rkuyd@o439891.ingest.sentry.io/79898575'
     environment: Staging
 
 files:
