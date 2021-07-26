@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  guardian:
+    image: 'ub-boilerplate/guardian:${IMAGE_TAG:?err}'
+    network_mode: bridge
+    build:
+      context: .
+      args:
+        APP_NAME: guardian
+        PORT: 5000
+      dockerfile: .deploy/Dockerfile
+    links:
+      - redis
+    ports:
+      - '5000:5000'
+    container_name: guardian-svc
+    depends_on:
+      - postgresd
+      - kratos
+      - kratos-migrate
+      - redis
+      - zipkin
+
+  tenant:
+    image: 'ub-boilerplate/tenant:${IMAGE_TAG:?err}'
+    network_mode: bridge
+    build:
+      context: .
+      args:
+        APP_NAME: tenant
+        PORT: 5001
+      dockerfile: .deploy/Dockerfile
+    ports:
+      - '5001:5001'
+    container_name: tenant-svc
+    links:
+      - redis
+    depends_on:
+      - postgresd
+      - kratos
+      - kratos-migrate
+      - redis
+      - zipkin
+
+  billing:
+    image: 'ub-boilerplate/billing:${IMAGE_TAG:?err}'
+    network_mode: bridge
+    build:
+      context: .
+      args:
+        APP_NAME: billing
+        PORT: 5002
+      dockerfile: .deploy/Dockerfile
+    links:
+      - redis
+    ports:
+      - '5002:5002'
+    container_name: billing-svc
+    depends_on:
+      - postgresd
+      - kratos
+      - kratos-migrate
+      - redis
+      - zipkin
+
+  kratos-migrate:
+    container_name: kratos-migrate
+    image: oryd/kratos:v0.7.0-alpha.1
+    command: migrate -c /etc/config/kratos/kratos.yml sql -e --yes
+    volumes:
+      - type: bind
+        source: ./.deploy/ory/config
+        target: /etc/config/kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - postgresd
+
+  kratos:
+    image: oryd/kratos:v0.7.0-alpha.1
+    container_name: kratos
+    ports:
+      - '4433:4433'
+      - '4434:4434'
+    command: serve --config /etc/config/kratos/kratos.yml all
+    volumes:
+      - type: bind
+        source: ./.deploy/ory/config
+        target: /etc/config/kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - kratos-migrate
+      - postgresd
+      - zipkin
+    links:
+      - zipkin
+
+  zipkin:
+    container_name: zipkin
+    network_mode: bridge
+    ports:
+      - '9411:9411'
+    image: openzipkin/zipkin
+
+  postgresd:
+    container_name: postgresd
+    image: postgres:9.6
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratos
+
+  redis:
+    container_name: redis
+    network_mode: bridge
+    image: redis:latest
+    ports:
+      - '6379:6379'

@@ -1,0 +1,9 @@
+*
+!libs/**
+!apps/**
+!package*.json
+!nx.json
+!workspace.json
+!ub.json
+!tsconfig.*.json
+!.*.json

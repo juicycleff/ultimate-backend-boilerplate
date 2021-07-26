@@ -35,17 +35,15 @@ selfservice:
     verification:
       ui_url: http://127.0.0.1:4455/verify
       lifespan: 1h
-      enabled: false
+      enabled: true
       after:
         default_browser_return_url: http://127.0.0.1:4455/
 
     ## Account Recovery Configuration ##
     recovery:
       ui_url: http://127.0.0.1:4455/verify
-
       lifespan: 1h
-
-      enabled: false
+      enabled: true
 
     ## error ##
     error:
@@ -54,9 +52,7 @@ selfservice:
     ## settings ##
     settings:
       lifespan: 1h
-
       privileged_session_max_age: 1h
-
       ui_url: http://127.0.0.1:4455/user/settings
 
   ## methods ##
@@ -77,6 +73,9 @@ selfservice:
       enabled: true
 
     profile:
+      enabled: true
+
+    link:
       enabled: true
 
 serve:
@@ -170,6 +169,6 @@ courier:
   ## SMTP Configuration ##
   # Configures outgoing emails using the SMTP protocol.
   smtp:
-    connection_uri: smtps://fgf:gfgf@fgfg.mailgun.org:587
+    connection_uri: smtps://postmaster:ghghghg-ghghg-ghghghg@ghghhh.mailgun.org:587
     from_name: Bob
     from_address: aaa@a.aa

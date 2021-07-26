@@ -2,9 +2,9 @@
 
 This project was generated using [UB](https://github.com/juicycleff/ultimate-backend).
 
-## Adding capabilities to your workspace
+## Project Structure
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+Coming soon
 
 There are also many [community plugins](https://nx.dev/nx-community) you could add.
 
