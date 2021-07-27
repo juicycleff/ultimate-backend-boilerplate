@@ -1,23 +1,23 @@
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
 
-// Arguments for the guardian app.
-export interface GuardianAppArgs {
+// Arguments for the tenant app.
+export interface TenantAppArgs {
   provider: k8s.Provider; // Provider resource for the target Kubernetes cluster.
   imageTag: string;
   staticAppIP?: pulumi.Input<string>; // Optional static IP to use for the service. (Required for AKS).
 }
 
-export class GuardianApp extends pulumi.ComponentResource {
+export class TenantApp extends pulumi.ComponentResource {
   public appUrl: pulumi.Output<string>;
 
   constructor(
     name: string,
-    args: GuardianAppArgs,
+    args: TenantAppArgs,
     opts: pulumi.ComponentResourceOptions = {},
     labels?: Record<string, any>,
   ) {
-    super('ub:kubernetes-ts-multicloud:guardian-app', name, args, opts);
+    super('ub:kubernetes-ts-multicloud:tenant-app', name, args, opts);
 
     const appLabels = { ...labels, app: 'ultimate-backend' };
     const deployment = new k8s.apps.v1.Deployment(
@@ -32,7 +32,7 @@ export class GuardianApp extends pulumi.ComponentResource {
               containers: [
                 {
                   name: 'guardian-svc',
-                  image: `ub-boilerplate/guardian:${args.imageTag}`,
+                  image: `ub-boilerplate/tenant:${args.imageTag}`,
                   ports: [{ containerPort: 5000, name: 'http' }],
                   livenessProbe: {
                     httpGet: { path: '/healthy', port: 'http' },
@@ -78,6 +78,7 @@ export class GuardianApp extends pulumi.ComponentResource {
     }
 
     this.appUrl = pulumi.interpolate`http://${address}:${service.spec.ports[0].port}`;
+
     this.registerOutputs();
   }
 }

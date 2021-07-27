@@ -1,23 +1,23 @@
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
 
-// Arguments for the guardian app.
-export interface GuardianAppArgs {
+// Arguments for the billing app.
+export interface BillingAppArgs {
   provider: k8s.Provider; // Provider resource for the target Kubernetes cluster.
   imageTag: string;
   staticAppIP?: pulumi.Input<string>; // Optional static IP to use for the service. (Required for AKS).
 }
 
-export class GuardianApp extends pulumi.ComponentResource {
+export class BillingApp extends pulumi.ComponentResource {
   public appUrl: pulumi.Output<string>;
 
   constructor(
     name: string,
-    args: GuardianAppArgs,
+    args: BillingAppArgs,
     opts: pulumi.ComponentResourceOptions = {},
     labels?: Record<string, any>,
   ) {
-    super('ub:kubernetes-ts-multicloud:guardian-app', name, args, opts);
+    super('ub:kubernetes-ts-multicloud:billing-app', name, args, opts);
 
     const appLabels = { ...labels, app: 'ultimate-backend' };
     const deployment = new k8s.apps.v1.Deployment(
@@ -33,7 +33,7 @@ export class GuardianApp extends pulumi.ComponentResource {
                 {
                   name: 'guardian-svc',
                   image: `ub-boilerplate/guardian:${args.imageTag}`,
-                  ports: [{ containerPort: 5000, name: 'http' }],
+                  ports: [{ containerPort: 5002, name: 'http' }],
                   livenessProbe: {
                     httpGet: { path: '/healthy', port: 'http' },
                     initialDelaySeconds: 5,
@@ -64,7 +64,7 @@ export class GuardianApp extends pulumi.ComponentResource {
         spec: {
           loadBalancerIP: args.staticAppIP, // Required for AKS - automatic LoadBalancer still in preview.
           selector: appLabels,
-          ports: [{ port: 80, targetPort: 5000 }],
+          ports: [{ port: 80, targetPort: 5002 }],
           type: 'ClusterIP',
         },
       },
@@ -78,6 +78,7 @@ export class GuardianApp extends pulumi.ComponentResource {
     }
 
     this.appUrl = pulumi.interpolate`http://${address}:${service.spec.ports[0].port}`;
+
     this.registerOutputs();
   }
 }
