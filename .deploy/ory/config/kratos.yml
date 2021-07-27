@@ -169,6 +169,6 @@ courier:
   ## SMTP Configuration ##
   # Configures outgoing emails using the SMTP protocol.
   smtp:
-    connection_uri: smtps://postmaster:ghghghg-ghghg-ghghghg@ghghhh.mailgun.org:587
+    connection_uri: smtps://postmaster:da5dc7e578a3367fc4c6d4448ee4eb97-7bbbcb78-33e99df8@sandbox4f85849958a0456d846e32d6ddc81f15.mailgun.org:587
     from_name: Bob
     from_address: aaa@a.aa

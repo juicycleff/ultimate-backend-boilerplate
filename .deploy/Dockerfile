@@ -68,8 +68,6 @@ EXPOSE $PORT
 USER nobody:nobody
 
 # Set tini as entrypoint
-# ENTRYPOINT ["tini", "--"]
-RUN echo $APP_NAME
-RUN echo $PORT
+ENTRYPOINT ["tini", "--"]
 
 CMD ["node", "main.js"]
