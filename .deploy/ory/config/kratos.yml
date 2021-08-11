@@ -23,6 +23,9 @@ selfservice:
       lifespan: 5h
       ui_url: http://127.0.0.1:4455/signup
       after:
+        oidc:
+          hooks:
+            - hook: session
         password:
           hooks:
             - hook: session
@@ -57,6 +60,56 @@ selfservice:
 
   ## methods ##
   methods:
+    oidc:
+      enabled: true
+      config:
+        providers:
+          - id: github # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: github
+            client_id: .... # Replace this with the OAuth2 Client ID provided by GitHub
+            client_secret: .... # Replace this with the OAuth2 Client Secret provided by GitHub
+            mapper_url: file:///etc/config/kratos/oidc.github.jsonnet
+            scope:
+              - user:email
+
+          - id: discord # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: discord
+            client_id: .... # Replace this with the OAuth2 Client ID provided by Discord
+            client_secret: .... # Replace this with the OAuth2 Client Secret provided by Discord
+            mapper_url: file:///etc/config/kratos/oidc.discord.jsonnet
+            scope:
+              - identify
+              - email
+
+          - id: google # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: google
+            client_id: .... # Replace this with the OAuth2 Client ID
+            client_secret: .... # Replace this with the OAuth2 Client secret
+            mapper_url: file:///etc/config/kratos/oidc.google.jsonnet
+            scope:
+              - email
+              - profile
+              # other supported scopes can be found in Google OAuth 2.0 dev docs
+            requested_claims:
+              id_token:
+                email:
+                  essential: true
+                email_verified:
+                  essential: true
+                given_name:
+                  essential: true
+                family_name: null
+                hd: null # If you want the G Suite domain
+
+          - id: facebook # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: facebook
+            client_id: .... # Replace this with the OAuth2 Client ID provided by Facebook app
+            client_secret: .... # Replace this with the OAuth2 Client Secret provided by Facebook app
+            mapper_url: file:///etc/config/kratos/oidc.facebook.jsonnet
+            scope:
+              - email # required for email and email_verified claims in the near future
+              # other supported scopes: user_gender, user_birthday
+
     password:
       ## Password Configuration ##
       # Define how passwords are validated.
@@ -169,6 +222,6 @@ courier:
   ## SMTP Configuration ##
   # Configures outgoing emails using the SMTP protocol.
   smtp:
-    connection_uri: smtps://postmaster:da5dc7e578a3367fc4c6d4448ee4eb97-7bbbcb78-33e99df8@sandbox4f85849958a0456d846e32d6ddc81f15.mailgun.org:587
+    connection_uri: smtps://postmaster:fgfgfg-fgfg-rtrt@tytyt.mailgun.org:587
     from_name: Bob
     from_address: aaa@a.aa

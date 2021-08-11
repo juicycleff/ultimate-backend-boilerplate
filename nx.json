@@ -26,6 +26,9 @@
     }
   },
   "projects": {
+    "application": {
+      "tags": []
+    },
     "billing": {
       "tags": []
     },
@@ -35,7 +38,7 @@
     "guardian": {
       "tags": []
     },
-    "tenant": {
+    "organisation": {
       "tags": []
     }
   }

@@ -48,6 +48,24 @@ export class PhoneNumberInputRequest {
 })
 export class CreateAccountRequest {
   /**
+   * @description Account firstname field is the first name of the account owner
+   */
+  @Field({
+    description: 'Account firstname field is the first name of the account owner'
+  })
+  @ApiProperty()
+  firstName: string;
+
+  /**
+   * @description Account lastname field is the last name of the account owner
+   */
+  @Field({
+    description: 'Account lastname field is the last name of the account owner'
+  })
+  @ApiProperty()
+  lastName: string;
+
+  /**
    * @description Email field is a unique but optional identity of an account
    */
   @Field({
@@ -71,6 +89,20 @@ export class CreateAccountRequest {
   username?: string;
 
   /**
+   * @description phone number field is a unique but optional identity of an account
+   */
+  @Field({
+    description: 'Phone number field is a unique but optional identity of an account',
+    nullable: true,
+  })
+  @ApiProperty()
+  @IsOptional()
+  @Validate(PhoneNumberValidator, {
+    message: 'Invalid international dialing prefix or digits',
+  })
+  phoneNumber?: PhoneNumberInputRequest;
+
+  /**
    * @description This is the password used together with any identity to verify an account by the owner
    */
   @Field({
@@ -92,20 +124,6 @@ export class CreateAccountRequest {
   @IsNotEmpty()
   @Match('password')
   confirmPassword: string;
-
-  /**
-   * @description phone number field is a unique but optional identity of an account
-   */
-  @Field({
-    description: 'Phone number field is a unique but optional identity of an account',
-    nullable: true,
-  })
-  @ApiProperty()
-  @IsOptional()
-  @Validate(PhoneNumberValidator, {
-    message: 'Invalid international dialing prefix or digits',
-  })
-  phoneNumber?: PhoneNumberInputRequest;
 }
 
 /**

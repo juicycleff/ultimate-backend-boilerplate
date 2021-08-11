@@ -3,8 +3,66 @@
   "cli": {
     "defaultCollection": "@nrwl/nest"
   },
-  "defaultProject": "tenant",
+  "defaultProject": "organisation",
   "projects": {
+    "application": {
+      "root": "apps/application",
+      "sourceRoot": "apps/application/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/apps/application",
+            "main": "apps/application/src/main.ts",
+            "tsConfig": "apps/application/tsconfig.app.json",
+            "assets": [
+              "apps/application/src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/application/src/environments/environment.ts",
+                  "with": "apps/application/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "application:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/application/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/application"
+          ],
+          "options": {
+            "jestConfig": "apps/application/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "billing": {
       "root": "apps/billing",
       "sourceRoot": "apps/billing/src",
@@ -12,12 +70,16 @@
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/billing",
             "main": "apps/billing/src/main.ts",
             "tsConfig": "apps/billing/tsconfig.app.json",
-            "assets": ["apps/billing/src/assets"]
+            "assets": [
+              "apps/billing/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -42,12 +104,16 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/billing/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/billing/**/*.ts"
+            ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/billing"],
+          "outputs": [
+            "coverage/apps/billing"
+          ],
           "options": {
             "jestConfig": "apps/billing/jest.config.js",
             "passWithNoTests": true
@@ -63,12 +129,16 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/common/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/common/**/*.ts"
+            ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/common"],
+          "outputs": [
+            "coverage/libs/common"
+          ],
           "options": {
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
@@ -83,12 +153,16 @@
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/guardian",
             "main": "apps/guardian/src/main.ts",
             "tsConfig": "apps/guardian/tsconfig.app.json",
-            "assets": ["apps/guardian/src/assets"]
+            "assets": [
+              "apps/guardian/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -113,12 +187,16 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/guardian/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/guardian/**/*.ts"
+            ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/guardian"],
+          "outputs": [
+            "coverage/apps/guardian"
+          ],
           "options": {
             "jestConfig": "apps/guardian/jest.config.js",
             "passWithNoTests": true
@@ -126,19 +204,23 @@
         }
       }
     },
-    "tenant": {
-      "root": "apps/tenant",
-      "sourceRoot": "apps/tenant/src",
+    "organisation": {
+      "root": "apps/organisation",
+      "sourceRoot": "apps/organisation/src",
       "projectType": "application",
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
-            "outputPath": "dist/apps/tenant",
-            "main": "apps/tenant/src/main.ts",
-            "tsConfig": "apps/tenant/tsconfig.app.json",
-            "assets": ["apps/tenant/src/assets"]
+            "outputPath": "dist/apps/organisation",
+            "main": "apps/organisation/src/main.ts",
+            "tsConfig": "apps/organisation/tsconfig.app.json",
+            "assets": [
+              "apps/organisation/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -147,8 +229,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/tenant/src/environments/environment.ts",
-                  "with": "apps/tenant/src/environments/environment.prod.ts"
+                  "replace": "apps/organisation/src/environments/environment.ts",
+                  "with": "apps/organisation/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -157,20 +239,24 @@
         "serve": {
           "executor": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "tenant:build"
+            "buildTarget": "organisation:build"
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/tenant/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/organisation/**/*.ts"
+            ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/tenant"],
+          "outputs": [
+            "coverage/apps/organisation"
+          ],
           "options": {
-            "jestConfig": "apps/tenant/jest.config.js",
+            "jestConfig": "apps/organisation/jest.config.js",
             "passWithNoTests": true
           }
         }

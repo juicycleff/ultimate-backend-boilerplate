@@ -9,6 +9,7 @@ import {
   SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum,
   SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum,
   V0alpha1Api,
+  UiNode,
 } from '@ory/kratos-client';
 import { axios } from '../../clients';
 import { ApolloError } from 'apollo-server-fastify';
@@ -121,6 +122,47 @@ export class KratosService implements OnModuleInit {
       });
 
       return rsp.data;
+    } catch (e) {
+      if (e?.response?.data?.ui?.messages) {
+        throw new HttpException(e.response.data.ui.messages, 400);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Gets flow forms registration fields
+   * @param options
+   */
+  async getRegistrationSchema(options?: any): Promise<UiNode[]> {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceRegistrationFlowWithoutBrowser(
+          options,
+        );
+
+      return flow.ui.nodes;
+    } catch (e) {
+      if (e?.response?.data?.ui?.messages) {
+        throw new HttpException(e.response.data.ui.messages, 400);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Gets flow forms login fields
+   * @param options
+   */
+  async getLoginSchema(options?: any): Promise<UiNode[]> {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceLoginFlowWithoutBrowser(
+          false,
+          options,
+        );
+
+      return flow.ui.nodes;
     } catch (e) {
       if (e?.response?.data?.ui?.messages) {
         throw new HttpException(e.response.data.ui.messages, 400);

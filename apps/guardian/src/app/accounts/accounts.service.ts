@@ -16,7 +16,7 @@ export class AccountsService {
   ) {}
 
   async create(cmd: CreateAccountRequest): Promise<any> {
-    const { password, confirmPassword, username, phoneNumber: digits, ...rest } = cmd;
+    const { password } = cmd;
 
     if (!cmd.email && !cmd.username && !cmd.phoneNumber) {
       throw new BadRequestException(
@@ -24,12 +24,13 @@ export class AccountsService {
       );
     }
 
-    let phoneNumber;
-    if (digits) {
-      phoneNumber = `${digits.prefix}-${digits.digit}`;
-    }
-
-    return await this.kratos.passwordRegistration({ ...rest }, password);
+    return await this.kratos.passwordRegistration({
+      email: cmd.email,
+      name: {
+        first: cmd.firstName,
+        last: cmd.lastName,
+      }
+    }, password);
   }
 
   async isAvailable(value: string): Promise<boolean> {

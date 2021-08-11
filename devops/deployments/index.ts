@@ -1,21 +1,21 @@
 import { HelloWorldApp } from './hello-world.deployment';
 import { GuardianApp } from './guardian.deployment';
-import { TenantApp } from "./tenant.deployment";
-import { BillingApp } from "./billing.deployment";
+import { TenantApp } from './tenant.deployment';
+import { BillingApp } from './billing.deployment';
 
 /**
  * Creates an application instance array
  * @param cluster
  * @param kuardImageTag
  */
-export function getDeployments(cluster: any, kuardImageTag: string) {
+export function getDeployments(cluster: any, imageTag: string) {
   const instances = [];
 
   // Demo app
   instances.push(
     new HelloWorldApp(cluster.name, {
       provider: cluster.provider,
-      imageTag: kuardImageTag,
+      imageTag,
       staticAppIP: cluster.staticAppIP,
     }),
   );
@@ -24,7 +24,7 @@ export function getDeployments(cluster: any, kuardImageTag: string) {
   instances.push(
     new GuardianApp(cluster.name, {
       provider: cluster.provider,
-      imageTag: kuardImageTag,
+      imageTag: imageTag,
       staticAppIP: cluster.staticAppIP,
     }),
   );
@@ -33,7 +33,7 @@ export function getDeployments(cluster: any, kuardImageTag: string) {
   instances.push(
     new TenantApp(cluster.name, {
       provider: cluster.provider,
-      imageTag: kuardImageTag,
+      imageTag,
       staticAppIP: cluster.staticAppIP,
     }),
   );
@@ -42,7 +42,7 @@ export function getDeployments(cluster: any, kuardImageTag: string) {
   instances.push(
     new BillingApp(cluster.name, {
       provider: cluster.provider,
-      imageTag: kuardImageTag,
+      imageTag,
       staticAppIP: cluster.staticAppIP,
     }),
   );

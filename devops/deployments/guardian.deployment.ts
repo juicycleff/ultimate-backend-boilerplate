@@ -21,7 +21,7 @@ export class GuardianApp extends pulumi.ComponentResource {
 
     const appLabels = { ...labels, app: 'ultimate-backend' };
     const deployment = new k8s.apps.v1.Deployment(
-      `${name}-ub-app`,
+      `${name}-guardian-svc`,
       {
         spec: {
           selector: { matchLabels: appLabels },

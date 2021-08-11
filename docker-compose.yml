@@ -15,34 +15,28 @@ services:
       - '5000:5000'
     container_name: guardian-svc
     depends_on:
-      - postgresd
       - kratos
-      - kratos-migrate
       - redis
-      - zipkin
     networks:
       - intranet
 
-  tenant:
-    image: 'ub-boilerplate/tenant'
+  organisation:
+    image: 'ub-boilerplate/organisation'
     build:
       context: .
       args:
-        APP_NAME: tenant
+        APP_NAME: organisation
         PORT: 5001
       dockerfile: .deploy/Dockerfile
 
     ports:
       - '5001:5001'
-    container_name: tenant-svc
+    container_name: organisation-svc
     links:
       - redis
     depends_on:
-      - postgresd
       - kratos
-      - kratos-migrate
       - redis
-      - zipkin
     networks:
       - intranet
 
@@ -61,11 +55,28 @@ services:
       - '5002:5002'
     container_name: billing-svc
     depends_on:
-      - postgresd
       - kratos
-      - kratos-migrate
       - redis
-      - zipkin
+    networks:
+      - intranet
+
+  application:
+    image: 'ub-boilerplate/application'
+    build:
+      context: .
+      args:
+        APP_NAME: application
+        PORT: 3333
+      dockerfile: .deploy/Dockerfile
+
+    links:
+      - redis
+    ports:
+      - '3333:3333'
+    container_name: application-svc
+    depends_on:
+      - kratos
+      - redis
     networks:
       - intranet
 
@@ -106,6 +117,13 @@ services:
     networks:
       - intranet
 
+  kumahq:
+    container_name: kumahq
+    image: kumahq/kuma-cp:1.2.3
+    command: run
+    ports:
+      - '5681:5681'
+
   zipkin:
     container_name: zipkin
     ports:
@@ -136,4 +154,3 @@ services:
 
 networks:
   intranet: {}
-

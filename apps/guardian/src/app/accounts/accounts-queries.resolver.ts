@@ -4,6 +4,7 @@ import { AccountsService } from './accounts.service';
 import { AccountAvailableRequest } from './commands';
 import { AccountResponse } from './queries';
 import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
+import {JSONObjectResolver} from "graphql-scalars";
 
 @Resolver(() => AccountQueries)
 export class AccountsQueriesResolver {
@@ -32,10 +33,5 @@ export class AccountsQueriesResolver {
   })
   async available(@Args() input: AccountAvailableRequest): Promise<boolean> {
     return await this.accountService.isAvailable(input.identity);
-  }
-
-  @ResolveField(() => String)
-  token(): string {
-    return 'token';
   }
 }

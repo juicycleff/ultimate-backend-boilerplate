@@ -1,12 +1,12 @@
 {
   "name": "ub-boilerplate",
   "services": {
-    "tenant": {
+    "organisation": {
       "type": "svc",
       "docker": true,
       "kubernetes": false,
       "language": "typescript",
-      "name": "tenant",
+      "name": "organisation",
       "port": 3000
     },
     "account": {
@@ -24,6 +24,14 @@
       "language": "typescript",
       "name": "billing",
       "port": 3002
+    },
+    "application": {
+      "type": "svc",
+      "docker": true,
+      "kubernetes": false,
+      "language": "typescript",
+      "name": "application",
+      "port": 3003
     }
   }
 }

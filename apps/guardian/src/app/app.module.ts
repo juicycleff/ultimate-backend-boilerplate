@@ -4,14 +4,9 @@ import * as path from 'path';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {
-  AuthGuard,
-  corsApolloOptions,
-  IdentityMiddleware,
-  KratosModule,
-} from '@ub-boilerplate/common';
+import { AuthGuard, IdentityMiddleware, KratosModule } from '@ub-boilerplate/common';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
-import { BullConfig } from './common';
+import { BullConfig, GqlConfigProvider } from './common';
 import { APP_GUARD } from '@nestjs/core';
 import { OauthModule } from './oauth/oauth.module';
 import { PasswordModule } from './password/password.module';
@@ -25,6 +20,7 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigSource } from '@ultimate-backend/common';
 import { ConfigModule } from '@ultimate-backend/config';
 import { AppResolver } from './app.resolver';
+import {FormsModule} from "./forms/forms.module";
 
 @Module({
   imports: [
@@ -38,9 +34,8 @@ import { AppResolver } from './app.resolver';
         baseOptions: {
           // Setting this is very important as axios will send the CSRF cookie otherwise
           // which causes problems with ORY Kratos' security detection.
-          withCredentials: false,
-
           // Timeout after 5 seconds.
+          withCredentials: false,
           timeout: 10000,
         },
       },
@@ -68,23 +63,8 @@ import { AppResolver } from './app.resolver';
     BullModule.forRootAsync({
       useClass: BullConfig,
     }),
-    GraphQLFederationModule.forRoot({
-      autoSchemaFile: true,
-      tracing: true,
-      fieldResolverEnhancers: ['guards'],
-      context: ({ req, res, payload, connection, request, reply }) => {
-        return {
-          req: request ?? req,
-          res: reply ?? res,
-          request,
-          reply,
-          payload,
-          connection,
-        };
-      },
-      autoTransformHttpErrors: true,
-      useGlobalPrefix: true,
-      cors: corsApolloOptions,
+    GraphQLFederationModule.forRootAsync({
+      useClass: GqlConfigProvider,
     }),
     RedisModule.forRoot({ useCluster: false }),
     ThrottlerModule.forRoot({
@@ -96,6 +76,7 @@ import { AppResolver } from './app.resolver';
     SecurityModule,
     PasswordModule,
     OauthModule,
+    FormsModule,
   ],
   controllers: [AppController],
   providers: [

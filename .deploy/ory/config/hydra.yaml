@@ -286,7 +286,7 @@ urls:
 
   ## error ##
   #
-  # Sets the error endpoint. The error ui will be shown when an OAuth2 error occurs that which can not be sent back to the client. Defaults to an internal fallback URL showing an error.
+  # Sets the error endpoint. The error forms will be shown when an OAuth2 error occurs that which can not be sent back to the client. Defaults to an internal fallback URL showing an error.
   #
   # Examples:
   # - https://my-error.app/error

@@ -21,7 +21,7 @@ export class TenantApp extends pulumi.ComponentResource {
 
     const appLabels = { ...labels, app: 'ultimate-backend' };
     const deployment = new k8s.apps.v1.Deployment(
-      `${name}-ub-app`,
+      `${name}-tenant-svc`,
       {
         spec: {
           selector: { matchLabels: appLabels },

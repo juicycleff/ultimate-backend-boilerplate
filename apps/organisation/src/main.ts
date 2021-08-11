@@ -22,12 +22,10 @@ async function bootstrap() {
     .hardenedSecurity({
       cors: {
         origin: true,
-        // preflightContinue: true,
         credentials: true,
         optionsSuccessStatus: 200,
       },
     })
-    // .withPoweredBy()
     .withCookie()
     .start();
 }

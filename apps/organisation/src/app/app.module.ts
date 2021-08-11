@@ -23,11 +23,6 @@ import { MembersModule } from './members/members.module';
           envFilePath: path.resolve(__dirname, '/assets/dev.env'),
           prefix: 'ULTIMATE_BACKEND',
         },
-        /* {
-          source: ConfigSource.Kubernetes,
-          name: 'ultimate-backend-tenant-config',
-          key: 'config.yml',
-        }, */
       ],
     }),
     KubernetesModule.forRoot(),

@@ -1,6 +1,6 @@
 name: guardian
 port: 5000
-host: 0.0.0.0
+host: "::"
 description: guardian api spec
 tag: guardian-svc
 version: latest

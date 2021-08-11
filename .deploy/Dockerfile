@@ -63,11 +63,14 @@ COPY --from=prod-dependencies /usr/src/app/package*.json  .
 COPY --from=prod-dependencies /usr/src/app/node_modules  ./node_modules
 COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
 
+ENV NODE_ENV production
+
 EXPOSE $PORT
-# Perform any further action as an unprivileged user.
+# Perform any further action as an unprivileged§ user.
 USER nobody:nobody
 
 # Set tini as entrypoint
 ENTRYPOINT ["tini", "--"]
 
+# RUN nx build $APP_NAME --configuration=production
 CMD ["node", "main.js"]
