@@ -59,9 +59,9 @@ COPY --from=utils /user/group /user/passwd /etc/
 COPY --from=utils /tini /sbin/tini
 
 WORKDIR /usr/src/app
-COPY --from=prod-dependencies /usr/src/app/package*.json  .
+COPY --from=prod-dependencies /usr/src/app/package*.json /usr/src/app/
 COPY --from=prod-dependencies /usr/src/app/node_modules  ./node_modules
-COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
+COPY --from=builder /usr/src/app/dist/apps/$APP_NAME /usr/src/app/
 
 ENV NODE_ENV production
 
