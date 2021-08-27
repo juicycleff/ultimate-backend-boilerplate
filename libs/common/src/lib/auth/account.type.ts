@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { OsoClass } from '@ultimate-backend/permissions';
 import { ApiProperty } from '@nestjs/swagger';
 import { Identity } from '@ory/kratos-client';
 
@@ -129,6 +130,7 @@ export class AccountIdentityTraits {
 @ObjectType('AccountIdentity', {
   description: 'Account response is a public representation of an account',
 })
+@OsoClass({ name: 'User' })
 export class AccountIdentity {
   /**
    * @description ID field is a database generated unique identifier for an account

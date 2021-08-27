@@ -6,7 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard, IdentityMiddleware, KratosModule } from '@ub-boilerplate/common';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
-import { BullConfig, GqlConfigProvider } from './common';
+import { BullConfig, GqlConfigProvider, KratosClassConfig } from './common';
 import { APP_GUARD } from '@nestjs/core';
 import { OauthModule } from './oauth/oauth.module';
 import { PasswordModule } from './password/password.module';
@@ -20,36 +20,28 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigSource } from '@ultimate-backend/common';
 import { ConfigModule } from '@ultimate-backend/config';
 import { AppResolver } from './app.resolver';
-import {FormsModule} from "./forms/forms.module";
+import { FormsModule } from './forms/forms.module';
+import { MikroOrmModule } from '@ub-boilerplate/common/database/mikro-orm';
+import { DbConfig } from './common/db-config';
+import { PermissionsModule } from '@ultimate-backend/permissions';
+import { PermissionsConfig } from './common/permissions.config';
 
 @Module({
   imports: [
-    BootstrapModule.forRoot({
-      filePath: path.resolve(__dirname, 'assets/bootstrap.yaml'),
-      enableEnv: true,
+    MikroOrmModule.forRootAsync({
+      useClass: DbConfig,
     }),
-    KratosModule.forRoot({
-      public: {
-        basePath: 'http://127.0.0.1:4433',
-        baseOptions: {
-          // Setting this is very important as axios will send the CSRF cookie otherwise
-          // which causes problems with ORY Kratos' security detection.
-          // Timeout after 5 seconds.
-          withCredentials: false,
-          timeout: 10000,
-        },
-      },
-      admin: {
-        configuration: {
-          basePath: 'http://127.0.0.1:4434',
-        },
-      },
+    KratosModule.forRootAsync({
+      useClass: KratosClassConfig,
     }),
     PrometheusModule.register({
       path: 'mymetrics',
       defaultMetrics: {
         enabled: false,
       },
+    }),
+    GraphQLFederationModule.forRootAsync({
+      useClass: GqlConfigProvider,
     }),
     ConfigModule.forRoot({
       global: true,
@@ -63,13 +55,18 @@ import {FormsModule} from "./forms/forms.module";
     BullModule.forRootAsync({
       useClass: BullConfig,
     }),
-    GraphQLFederationModule.forRootAsync({
-      useClass: GqlConfigProvider,
-    }),
     RedisModule.forRoot({ useCluster: false }),
     ThrottlerModule.forRoot({
       ttl: 60000,
       limit: 3,
+    }),
+    BootstrapModule.forRoot({
+      filePath: path.resolve(__dirname, 'assets/bootstrap.yaml'),
+      enableEnv: true,
+    }),
+
+    PermissionsModule.forRootAsync({
+      useClass: PermissionsConfig,
     }),
     AccountsModule,
     SessionsModule,

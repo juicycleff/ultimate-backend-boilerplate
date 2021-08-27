@@ -24,13 +24,16 @@ export class AccountsService {
       );
     }
 
-    return await this.kratos.passwordRegistration({
-      email: cmd.email,
-      name: {
-        first: cmd.firstName,
-        last: cmd.lastName,
-      }
-    }, password);
+    return await this.kratos.passwordRegistration(
+      {
+        email: cmd.email,
+        name: {
+          first: cmd.firstName,
+          last: cmd.lastName,
+        },
+      },
+      password,
+    );
   }
 
   async isAvailable(value: string): Promise<boolean> {

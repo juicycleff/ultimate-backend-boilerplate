@@ -14,6 +14,8 @@ services:
     ports:
       - '5000:5000'
     container_name: guardian-svc
+    environment:
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - kratos
       - redis
@@ -117,12 +119,16 @@ services:
     networks:
       - intranet
 
-  kumahq:
-    container_name: kumahq
-    image: kumahq/kuma-cp:1.2.3
-    command: run
+  krakend:
+    container_name: krakend
+    image: devopsfaith/krakend
+    command: run -d -c /etc/krakend/krakend.json
     ports:
-      - '5681:5681'
+      - '8080:8080'
+    networks:
+      - intranet
+    volumes:
+      - ./.deploy/krakend:/etc/krakend
 
   zipkin:
     container_name: zipkin
@@ -135,6 +141,8 @@ services:
   postgresd:
     container_name: postgresd
     image: postgres:9.6
+    volumes:
+      - ./scripts/init-service-db.sh:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '5432:5432'
     environment:
@@ -146,11 +154,22 @@ services:
 
   redis:
     container_name: redis
-    image: redis:latest
+    image: redis:5.0-alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - '6379:6379'
     networks:
       - intranet
 
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    networks:
+      - intranet
+
 networks:
-  intranet: {}
+  intranet:
+    driver: bridge

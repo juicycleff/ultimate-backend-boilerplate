@@ -1,6 +1,6 @@
 name: guardian
 port: 5000
-host: "::"
+host: '::'
 description: guardian api spec
 tag: guardian-svc
 version: latest
@@ -17,7 +17,7 @@ clients:
   redis:
     useCluster: false
     redisOptions:
-      host: 'localhost'
+      host: redis
       port: 6379
 
 transport:
@@ -34,10 +34,3 @@ swagger:
         type: 'http'
         scheme: 'bearer'
         name: 'Authorization'
-
-loadbalancer:
-  services:
-    - strategy: 'RoundRobinStrategy'
-      name: 'example'
-    - strategy: 'RoundRobinStrategy'
-      name: 'adv-example'

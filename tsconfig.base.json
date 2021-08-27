@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ub-boilerplate/common": ["libs/common/src/index.ts"]
+      "@ub-boilerplate/common": ["libs/common/src/index.ts"],
+      "@ub-boilerplate/common/*": ["libs/common/src/lib/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

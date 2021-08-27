@@ -3,6 +3,7 @@ import { Configuration } from '@ory/kratos-client';
 import { AxiosInstance } from 'axios';
 
 export const KRATOS_OPTIONS_PROVIDER = 'KRATOS_OPTIONS_PROVIDER';
+export const KRATOS_MODULE_OPTIONS = 'KRATOS_MODULE_OPTIONS';
 
 export interface KratosOptions {
   configuration: Omit<Configuration, 'isJsonMime'>;

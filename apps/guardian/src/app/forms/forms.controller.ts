@@ -1,4 +1,4 @@
-import { Controller, Get} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FormsService } from './forms.service';
 
@@ -6,8 +6,7 @@ import { FormsService } from './forms.service';
 @ApiTags('forms')
 @Controller('forms')
 export class FormsController {
-  constructor(
-    private readonly formService: FormsService,) {}
+  constructor(private readonly formService: FormsService) {}
 
   @Get('/login')
   async login() {

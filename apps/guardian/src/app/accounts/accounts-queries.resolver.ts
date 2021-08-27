@@ -4,7 +4,7 @@ import { AccountsService } from './accounts.service';
 import { AccountAvailableRequest } from './commands';
 import { AccountResponse } from './queries';
 import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
-import {JSONObjectResolver} from "graphql-scalars";
+import { JSONObjectResolver } from 'graphql-scalars';
 
 @Resolver(() => AccountQueries)
 export class AccountsQueriesResolver {

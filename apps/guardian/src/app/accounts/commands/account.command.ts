@@ -51,7 +51,7 @@ export class CreateAccountRequest {
    * @description Account firstname field is the first name of the account owner
    */
   @Field({
-    description: 'Account firstname field is the first name of the account owner'
+    description: 'Account firstname field is the first name of the account owner',
   })
   @ApiProperty()
   firstName: string;
@@ -60,7 +60,7 @@ export class CreateAccountRequest {
    * @description Account lastname field is the last name of the account owner
    */
   @Field({
-    description: 'Account lastname field is the last name of the account owner'
+    description: 'Account lastname field is the last name of the account owner',
   })
   @ApiProperty()
   lastName: string;

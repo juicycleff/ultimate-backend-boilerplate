@@ -1,7 +1,6 @@
 import { HttpException, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { KRATOS_OPTIONS_PROVIDER, KratosModuleOptions } from './kratos.options';
 import {
-  AdminApi,
   Configuration,
   SubmitSelfServiceLoginFlowWithPasswordMethodBodyMethodEnum,
   SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum,
@@ -18,7 +17,6 @@ import { AccountIdentity } from '../account.type';
 @Injectable()
 export class KratosService implements OnModuleInit {
   private _kratos: V0alpha1Api;
-  private _admin: AdminApi;
 
   constructor(
     @Inject(KRATOS_OPTIONS_PROVIDER)
@@ -30,24 +28,9 @@ export class KratosService implements OnModuleInit {
     return this._kratos;
   }
 
-  public get admin_api(): AdminApi {
-    if (!this._admin) throw new Error('Kratos admin API not initialized');
-    return this._admin;
-  }
-
   private init() {
     if (this.options.public) {
       this._kratos = new V0alpha1Api(new Configuration(this.options.public), '', axios);
-    }
-
-    if (this.options.admin) {
-      this._admin = new AdminApi(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.options.admin.configuration,
-        this.options.admin.basePath,
-        this.options.admin.axios ?? axios,
-      );
     }
   }
 
@@ -189,7 +172,7 @@ export class KratosService implements OnModuleInit {
         );
 
       const rsp = await this.public_api.submitSelfServiceRecoveryFlow(flow.id, token, {
-        method: SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum.Password,
+        method: SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum.Link,
         csrf_token: options.csrfToken,
         email: email,
       });
@@ -224,7 +207,7 @@ export class KratosService implements OnModuleInit {
         flow.id,
         token,
         {
-          method: SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum.Password,
+          method: SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum.Link,
           csrf_token: options.csrfToken,
           email: email,
         },
@@ -263,11 +246,10 @@ export class KratosService implements OnModuleInit {
    */
   async health(): Promise<string> {
     try {
-      const rsp = await this.admin_api.isAlive();
+      const rsp = { data: { status: 'ok' } };
 
       return rsp.data.status;
     } catch (e) {
-      console.log(e?.response?.data?.ui);
       if (e?.response?.data?.ui?.messages) {
         const messages: string[] = [];
         const codes: string[] = [];

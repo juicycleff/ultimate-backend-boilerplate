@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "name": "Ultimate Backend",
+  "endpoints": [
+    {
+      "endpoint": "/limited-to-5000-per-second",
+      "extra_config": {
+        "github.com/devopsfaith/krakend-ratelimit/juju/router": {
+          "maxRate": 5000
+        }
+      },
+      "backend": [
+        {
+          "host": ["http://slow.backend.com/"],
+          "url_pattern": "/slow/endpoint",
+          "extra_config": {
+            "github.com/devopsfaith/krakend-ratelimit/juju/proxy": {
+              "maxRate": 100,
+              "capacity": 1
+            }
+          }
+        },
+        {
+          "host": ["http://fast.backend.com/"],
+          "url_pattern": "/fast/endpoint"
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/billing",
+      "backend": [
+        {
+          "url_pattern": "/api/v1",
+          "method": "GET",
+          "host": ["http://localhost:5002"]
+        }
+      ]
+    }
+  ]
+}

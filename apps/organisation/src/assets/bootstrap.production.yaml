@@ -1,17 +1,28 @@
-name: tenant
+name: organisation
 port: 5001
-host: "::"
+host: '::'
+description: organisation api spec
+tag: organisation-svc
+version: latest
 
 clients:
-  etcd:
-    retryAttempts: 6000
-  zookeeper:
-    retryAttempts: 6000
-  kubernetes:
-    retryAttempts: 6000
+  redis:
+    useCluster: false
+    redisOptions:
+      host: 'localhost'
+      port: 6379
 
 transport:
   grpc:
-    url: 0.0.0.0:{{ port }}
-    package: assets/service.proto
-    protoPath: dist/apps/tenant/assets/service.proto
+    package: 'organisation'
+    protoPath: 'service.proto'
+    url: 0.0.0.0:{{port}}
+
+swagger:
+  options:
+    auth:
+      authType: 'bearer'
+      option:
+        type: 'http'
+        scheme: 'bearer'
+        name: 'Authorization'

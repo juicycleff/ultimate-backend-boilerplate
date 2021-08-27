@@ -1,5 +1,5 @@
 syntax = "proto3";
-package ultimate_backend.tenant;
+package ultimate_backend.organisation;
 
 message CallRequest {
   string methodName = 1;
@@ -16,6 +16,6 @@ message CallResponse {
   }
 }
 
-service TenantService {
+service OrganisationService {
   rpc Call(CallRequest) returns (CallResponse) {}
 }
