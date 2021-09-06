@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package ultimate_backend.srv.guardian;
+
+message Message {
+  string body = 1;
+}
+
+service GuardianService {
+  rpc SayHello(Message) returns (Message) {}
+}

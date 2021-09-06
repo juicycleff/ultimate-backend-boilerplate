@@ -1,0 +1,431 @@
+syntax = "proto3";
+
+package ultimate_backend.srv.billing;
+
+service BillingService {
+  rpc CreateBillingCustomer(CreateBillingCustomerRequest) returns (CreateBillingCustomerResponse) {}
+  rpc DeleteBillingCustomer(DeleteBillingCustomerRequest) returns (DeleteBillingCustomerResponse) {}
+  rpc ReadBillingCustomer(ReadBillingCustomerRequest) returns (ReadBillingCustomerResponse) {}
+
+  rpc CreateBillingPlan(CreateBillingPlanRequest) returns (CreateBillingPlanResponse) {}
+  rpc ReadBillingPlan(ReadBillingPlanRequest) returns (ReadBillingPlanResponse) {}
+  rpc FindBillingPlans(FindBillingPlansRequest) returns (FindBillingPlansResponse) {}
+  rpc ReadStripeBillingPlan(ReadStripeBillingPlanRequest) returns (ReadStripeBillingPlanResponse) {}
+  rpc FindStripeBillingPlans(FindStripeBillingPlansRequest) returns (FindStripeBillingPlansResponse) {}
+
+  rpc CreateBillingCard(CreateBillingCardRequest) returns (CreateBillingCardResponse) {}
+  rpc DeleteBillingCard(DeleteBillingCardRequest) returns (DeleteBillingCardResponse) {}
+  rpc SetDefaultBillingCard(SetDefaultBillingCardRequest) returns (SetDefaultBillingCardResponse) {}
+  rpc ReadBillingCard(ReadBillingCardRequest) returns (ReadBillingCardResponse) {}
+  rpc FindBillingCards(FindBillingCardsRequest) returns (FindBillingCardsResponse) {}
+
+  rpc CreateBillingSubscription(CreateBillingSubscriptionRequest) returns (CreateBillingSubscriptionResponse) {}
+  rpc CancelBillingSubscription(CancelBillingSubscriptionRequest) returns (CancelBillingSubscriptionResponse) {}
+  rpc ChangeBillingSubscription(ChangeBillingSubscriptionRequest) returns (ChangeBillingSubscriptionResponse) {}
+  rpc ReadBillingSubscription(ReadBillingSubscriptionRequest) returns (ReadBillingSubscriptionResponse) {}
+  rpc FindBillingSubscriptions(FindBillingSubscriptionsRequest) returns (FindBillingSubscriptionsResponse) {}
+
+  rpc ReadBillingInvoice(ReadBillingInvoiceRequest) returns (ReadBillingInvoiceResponse) {}
+  rpc FindBillingInvoices(FindBillingInvoicesRequest) returns (FindBillingInvoicesResponse) {}
+}
+
+enum BillingPlanPriceInterval {
+  MONTH  = 0;
+  YEAR   = 1;
+  WEEK   = 2;
+  DAY    = 3;
+}
+
+enum BillingInvoiceStatus {
+  DRAFT  = 0;
+  OPEN  = 1;
+  PAID  = 2;
+  UNCOLLECTIBLE  = 3;
+  VOID  = 4;
+}
+
+enum BillingSubscriptionStatus {
+  ACTIVE = 0;
+  ALL = 1;
+  CANCELED = 2;
+  INCOMPLETE = 3;
+  INCOMPLETE_EXPIRED = 4;
+  PAST_DUE = 5;
+  TRIALING = 6;
+  UNPAID = 7;
+}
+
+message TenantBillingSubscription {
+  // @inject_tag: bson:"_id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"tenantId,omitempty"
+  string tenantId = 2;
+  // @inject_tag: bson:"status,omitempty"
+  string status = 3;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 6;
+  // @inject_tag: bson:"updatedAt,omitempty"
+  string updatedAt = 7;
+  // @inject_tag: bson:"collectionMethod,omitempty"
+  string collectionMethod = 8;
+
+  string currentPeriodStart = 9;
+
+  string currentPeriodEnd = 10;
+
+  string endedAt = 11;
+
+  string canceledAt = 12;
+
+  string latestBillingInvoiceId = 13;
+
+  string startDate = 14;
+
+  string trialStart = 15;
+
+  string trialEnd = 16;
+
+  string customerEmail = 17;
+
+  string customerName = 18;
+}
+
+message BillingCustomer {
+  // @inject_tag: bson:"_id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"email,omitempty"
+  string email = 4;
+  // @inject_tag: bson:"name,omitempty"
+  string name = 5;
+}
+
+message Address {
+  string id = 1;
+  string country = 2;
+  string state = 3;
+  string city = 4;
+  string postalCode = 5;
+  string line = 6;
+  string line2 = 7;
+}
+
+message BillingCard {
+  string id = 1;
+  string name = 2;
+  string cvc = 3;
+  string number = 4;
+  string brand = 5;
+  string currency = 6;
+  Address address = 7;
+  uint32 expMonth = 8;
+  uint32 expYear = 9;
+  string lastFourDigit = 10;
+  bool isDefault = 11;
+}
+
+message Price {
+  // @inject_tag: bson:"name,omitempty"
+  string name = 1;
+  // @inject_tag: bson:"currency,omitempty"
+  string currency = 2;
+  // @inject_tag: bson:"id,omitempty"
+  string id = 3;
+  // @inject_tag: bson:"trialDays,omitempty"
+  int32 trialDays = 4;
+  // @inject_tag: bson:"amount,omitempty"
+  float amount = 5;
+}
+
+message StripeBillingPlan {
+  // @inject_tag: bson:"name,omitempty"
+  string name = 1;
+  // @inject_tag: bson:"currency,omitempty"
+  string currency = 2;
+  // @inject_tag: bson:"id,omitempty"
+  string id = 3;
+  // @inject_tag: bson:"trialDays,omitempty"
+  int32 trialDays = 4;
+  // @inject_tag: bson:"amount,omitempty"
+  float amount = 5;
+}
+
+message Feature {
+  // @inject_tag: bson:"name,omitempty"
+  string name = 1;
+  // @inject_tag: bson:"normalizedName,omitempty"
+  string normalizedName = 2;
+  // @inject_tag: bson:"description,omitempty"
+  string description = 3;
+  // @inject_tag: bson:"min,omitempty"
+  int32 min = 4;
+  // @inject_tag: bson:"max,omitempty"
+  int32 max = 5;
+  // @inject_tag: bson:"active,omitempty"
+  bool active = 6;
+  // @inject_tag: bson:"full,omitempty"
+  bool full = 7;
+  // @inject_tag: bson:"full,omitempty"
+  string unit = 8;
+}
+
+message BillingPlan {
+  // @inject_tag: bson:"_id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"normalizedName,omitempty"
+  string normalizedName = 2;
+  // @inject_tag: bson:"prices,omitempty"
+  Price price = 3;
+  // @inject_tag: bson:"features,omitempty"
+  repeated Feature features = 4;
+  // @inject_tag: bson:"active,omitempty"
+  bool active = 5;
+  // @inject_tag: bson:"free,omitempty"
+  bool free = 6;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 7;
+  // @inject_tag: bson:"updatedAt,omitempty"
+  string updatedAt = 8;
+  // @inject_tag: bson:"name,omitempty"
+  string name = 9;
+  // @inject_tag: bson:"stripeId,omitempty"
+  string stripeId = 10;
+}
+
+message BillingInvoice {
+  // @inject_tag: bson:"id,omitempty"
+  string id = 1;
+  string accountCountry = 2;
+  string accountName = 3;
+  float amountDue = 4;
+  float amountPaid = 5;
+  float amountRemaining = 6;
+  string billingReason = 7;
+  string currency = 8;
+  string customerEmail = 9;
+  string customerName = 10;
+  string description = 11;
+  string dueDate = 12;
+  float endingBalance = 13;
+  string hostedBillingInvoiceUrl = 14;
+  string invoicePdf = 15;
+  string number = 16;
+  bool paid = 17;
+  string receiptNumber = 18;
+  float startingBalance = 19;
+  string statementDescriptor = 20;
+  string status = 21;
+  int32 subtotal = 22;
+  float tax = 23;
+  float taxPercent = 24;
+  float total = 25;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 26;
+  // @inject_tag: bson:"updatedAt,omitempty"
+  string updatedAt = 27;
+}
+
+message CreatePriceRequest {
+  float price = 1;
+  string currency = 2;
+  string id = 3;
+  string nickname = 4;
+  int32 trialDays = 5;
+  int32 intervalCount = 6;
+  string interval = 7;
+}
+
+message CreateBillingPlanRequest {
+  string name = 1;
+  string description = 2;
+  repeated CreatePriceRequest prices = 3;
+  repeated Feature features = 4;
+  bool active = 8;
+  bool free = 9;
+}
+
+message CreateBillingPlanResponse {
+  BillingPlan plan = 1;
+}
+
+message ReadBillingPlanRequest {
+  string id = 1;
+}
+
+message ReadBillingPlanResponse {
+  BillingPlan plan = 1;
+}
+
+message FindBillingPlansRequest {}
+
+message FindBillingPlansResponse {
+  repeated BillingPlan plans = 1;
+}
+
+message ReadStripeBillingPlanRequest {
+  string id = 1;
+}
+
+message ReadStripeBillingPlanResponse {
+  StripeBillingPlan plan = 1;
+}
+
+message FindStripeBillingPlansRequest {
+  string productId = 1;
+}
+
+message FindStripeBillingPlansResponse {
+  repeated StripeBillingPlan plans = 1;
+}
+
+message ReadBillingInvoiceRequest {
+  string id = 1;
+}
+
+message ReadBillingInvoiceResponse {
+  BillingInvoice invoice = 1;
+}
+
+message FindBillingInvoicesRequest {}
+
+message FindBillingInvoicesResponse {
+  repeated BillingInvoice invoices = 1;
+}
+
+// BillingSubscription
+message CreateBillingSubscriptionRequest {
+  string customerId = 1;
+  string tenantId = 2;
+  string planId = 3;
+  string couponId = 4;
+  string cardId = 5;
+}
+
+message CreateBillingSubscriptionResponse {
+  TenantBillingSubscription subscription = 1;
+}
+
+message ChangeBillingSubscriptionRequest {
+  string customerId = 1;
+  string tenantId = 2;
+  string planId = 3;
+  string couponId = 4;
+}
+
+message ChangeBillingSubscriptionResponse {
+  TenantBillingSubscription subscription = 1;
+}
+
+message CancelBillingSubscriptionRequest {
+  string customerId = 1;
+  string tenantId = 2;
+}
+
+message CancelBillingSubscriptionResponse {
+  TenantBillingSubscription subscription = 1;
+}
+
+message ReadBillingSubscriptionRequest {
+  string id = 1;
+  string tenantId = 2;
+}
+
+message ReadBillingSubscriptionResponse {
+  TenantBillingSubscription subscription = 1;
+}
+
+message FindBillingSubscriptionsRequest {
+  string tenantId = 1;
+}
+
+message FindBillingSubscriptionsResponse {
+  repeated TenantBillingSubscription subscriptions = 1;
+}
+
+// BillingCards
+message CreateBillingCardRequest {
+  string name = 1;
+  string cvc = 2;
+  string number = 3;
+  string currency = 4;
+  string expMonth = 8;
+  string expYear = 9;
+  Address address = 10;
+}
+
+message CreateBillingCardResponse {
+  BillingCard card = 1;
+}
+
+message SetDefaultBillingCardRequest {
+  string id = 1;
+}
+
+message SetDefaultBillingCardResponse {
+  BillingCard card = 1;
+}
+
+message DeleteBillingCardRequest {
+  string id = 1;
+}
+
+message DeleteBillingCardResponse {
+  BillingCard card = 1;
+}
+
+message ReadBillingCardRequest {
+  string id = 1;
+}
+
+message ReadBillingCardResponse {
+  BillingCard card = 1;
+}
+
+message FindBillingCardsRequest {}
+
+message FindBillingCardsResponse {
+  repeated BillingCard cards = 1;
+}
+
+// BillingCustomer
+
+message CreateBillingCustomerRequest {
+  string name = 1;
+  string email = 2;
+  string number = 3;
+  string currency = 4;
+}
+
+message CreateBillingCustomerResponse {
+  BillingCustomer customer = 1;
+}
+
+message DeleteBillingCustomerRequest {
+  string id = 1;
+}
+
+message DeleteBillingCustomerResponse {
+  BillingCustomer customer = 1;
+}
+
+message ReadBillingCustomerRequest {
+  string id = 1;
+}
+
+message ReadBillingCustomerResponse {
+  BillingCustomer customer = 1;
+}
+
+message Message {
+  string say = 1;
+}
+
+message Event {
+  // unique id
+  string id = 1;
+  // unix timestamp
+  int32 timestamp = 2;
+  // message
+  string message = 3;
+  // message
+  string topic = 4;
+}

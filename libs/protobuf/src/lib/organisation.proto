@@ -1,0 +1,226 @@
+syntax = "proto3";
+package ultimate_backend.srv.organisation;
+
+service OrganisationService {
+  // Organisations
+  rpc CreateOrganisation(CreateOrganisationRequest) returns (CreateOrganisationResponse) {}
+  rpc ReadOrganisation(ReadOrganisationRequest) returns (ReadOrganisationResponse) {}
+  rpc FindOrganisation(FindOrganisationRequest) returns (FindOrganisationResponse) {}
+  rpc UpdateOrganisation(UpdateOrganisationRequest) returns (UpdateOrganisationResponse) {}
+  rpc DeleteOrganisation(DeleteOrganisationRequest) returns (DeleteOrganisationResponse) {}
+  rpc OrganisationAvailable(OrganisationAvailableRequest) returns (OrganisationAvailableResponse) {}
+}
+
+service OrganisationMemberService {
+  // Organisation Members
+  rpc InviteOrganisationMember(InviteOrganisationMemberRequest) returns (InviteOrganisationMemberResponse) {}
+  rpc AcceptOrganisationMemberInvitation(AcceptOrganisationMemberInvitationRequest) returns (AcceptOrganisationMemberInvitationResponse) {}
+  rpc UpdateOrganisationMember(UpdateOrganisationMemberRequest) returns (UpdateOrganisationMemberResponse) {}
+  rpc DeleteOrganisationMember(DeleteOrganisationMemberRequest) returns (DeleteOrganisationMemberResponse) {}
+  rpc ReadOrganisationMember(ReadOrganisationMemberRequest) returns (ReadOrganisationMemberResponse) {}
+  rpc FindOrganisationMembers(FindOrganisationMemberRequest) returns (FindOrganisationMemberResponse) {}
+}
+
+message Organisation {
+  // @inject_tag: bson:"_id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"normalizedName,omitempty"
+  string normalizedName = 2;
+  // @inject_tag: bson:"name,omitempty"
+  string name = 3;
+  // @inject_tag: bson:"tokens,omitempty"
+  repeated OrganisationAccess tokens = 4;
+  // @inject_tag: bson:"createdBy,omitempty"
+  string createdBy = 5;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 6;
+  // @inject_tag: bson:"updatedAt,omitempty"
+  string updatedAt = 7;
+  // @inject_tag: bson:"members,omitempty"
+  repeated OrganisationMember members = 8;
+  // @inject_tag: bson:"settings,omitempty"
+  Settings settings = 9;
+  // @inject_tag: bson:"payment,omitempty"
+  BillingSettings billing = 10;
+  // @inject_tag: bson:"payment,omitempty"
+  int32 totalPoints = 11;
+}
+
+message UpdateOrganisationPayload {
+  // @inject_tag: bson:"name,omitempty"
+  string name = 3;
+  // @inject_tag: bson:"settings,omitempty"
+  Settings settings = 9;
+}
+
+message OrganisationAccess {
+  // @inject_tag: bson:"key,omitempty"
+  string key = 1;
+  // @inject_tag: bson:"secret,omitempty"
+  string secret = 2;
+  // @inject_tag: bson:"active,omitempty"
+  bool active = 3;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 4;
+}
+
+message BillingSettings {
+  // @inject_tag: bson:"currentPlan,omitempty"
+  string currentPlan = 1;
+  // @inject_tag: bson:"subscriptionPlan,omitempty"
+  string currentSubscription = 2;
+}
+
+message ConnectionSettings {
+  // @inject_tag: bson:"host,omitempty"
+  string host = 1;
+}
+
+message Settings {
+  // @inject_tag: bson:"connection,omitempty"
+  bool showStatusIcon = 1;
+  // @inject_tag: bson:"connection,omitempty"
+  ConnectionSettings connection = 2;
+}
+
+enum InvitationStatus {
+  // option allow_alias = true;
+  PENDING = 0;
+  ACCEPTED = 1;
+  REJECTED = 2;
+}
+
+message OrganisationMember {
+  // @inject_tag: bson:"id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"email,omitempty"
+  string email = 2;
+  // @inject_tag: bson:"userId,omitempty"
+  string userId = 3;
+  // @inject_tag: bson:"createdAt,omitempty"
+  string createdAt = 4;
+  // @inject_tag: bson:"status,omitempty"
+  string status = 5;
+  // @inject_tag: bson:"role,omitempty"
+  string role = 6;
+  // @inject_tag: bson:"updatedAt,omitempty"
+  string updatedAt = 7;
+}
+
+// Organisation
+message CreateOrganisationRequest {
+  string name = 1;
+  string planId = 2;
+  string couponId = 3;
+  string cardId = 4;
+}
+
+message CreateOrganisationResponse {
+  Organisation tenant = 1;
+}
+
+message FindOrganisationRequest {
+  string filter = 1;
+}
+
+message OrganisationAvailableRequest {
+  string identifier = 1;
+}
+
+message OrganisationAvailableResponse {
+  bool available = 1;
+}
+
+message FindOrganisationResponse {
+  repeated Organisation tenants = 1;
+}
+
+message DeleteOrganisationRequest {
+  string id = 1;
+}
+
+message DeleteOrganisationResponse {
+  Organisation tenant = 1;
+}
+
+message ReadOrganisationRequest {
+  string filter = 1;
+}
+
+message ReadOrganisationResponse {
+  Organisation tenant = 1;
+}
+
+message UpdateOrganisationRequest {
+  // @inject_tag: bson:"_id,omitempty"
+  string id = 1;
+  UpdateOrganisationPayload data = 2;
+}
+
+message UpdateOrganisationResponse {
+  Organisation tenant = 1;
+}
+
+// Organisation Members
+message InviteOrganisationMemberRequest {
+  // @inject_tag: bson:"email,omitempty"
+  string email = 2;
+  // @inject_tag: bson:"userId,omitempty"
+  string userId = 3;
+  // @inject_tag: bson:"role,omitempty"
+  string role = 6;
+}
+
+message InviteOrganisationMemberResponse {
+  OrganisationMember member = 1;
+}
+
+message FindOrganisationMemberRequest {
+  string status = 1;
+  string role = 2;
+  string tenantId = 3;
+}
+
+message FindOrganisationMemberResponse {
+  repeated OrganisationMember members = 1;
+}
+
+message DeleteOrganisationMemberRequest {
+  string id = 1;
+}
+
+message DeleteOrganisationMemberResponse {
+  OrganisationMember member = 1;
+}
+
+message ReadOrganisationMemberRequest {
+  // @inject_tag: bson:"id,omitempty"
+  string id = 1;
+}
+
+message ReadOrganisationMemberResponse {
+  OrganisationMember member = 1;
+}
+
+message UpdateOrganisationMemberRequest {
+  // @inject_tag: bson:"id,omitempty"
+  string id = 1;
+  // @inject_tag: bson:"status,omitempty"
+  string status = 2;
+  // @inject_tag: bson:"role,omitempty"
+  string role = 3;
+}
+
+message UpdateOrganisationMemberResponse {
+  OrganisationMember member = 1;
+}
+
+message AcceptOrganisationMemberInvitationRequest {
+  // @inject_tag: bson:"token,omitempty"
+  string token = 1;
+}
+
+message AcceptOrganisationMemberInvitationResponse {
+  OrganisationMember member = 1;
+}
+
