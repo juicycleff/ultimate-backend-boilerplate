@@ -1,24 +1,19 @@
-import { HelloWorldApp } from './hello-world.deployment';
-import { GuardianApp } from './guardian.deployment';
-import { TenantApp } from './tenant.deployment';
-import { BillingApp } from './billing.deployment';
+import { GuardianApp } from './apps/guardian.deployment';
+import { OrganisationApp } from './apps/organisation.deployment';
+import { BillingApp } from './apps/billing.deployment';
+
+import { RedisApp } from './thirdparty/redis.deployment';
+import { KratosApp } from './thirdparty/kratos.deployment';
+import { TraefikApp } from './thirdparty/traefik.deployment';
+import { KrakendApp } from './thirdparty/krakend.deployment';
 
 /**
  * Creates an application instance array
  * @param cluster
- * @param kuardImageTag
+ * @param imageTag
  */
 export function getDeployments(cluster: any, imageTag: string) {
   const instances = [];
-
-  // Demo app
-  instances.push(
-    new HelloWorldApp(cluster.name, {
-      provider: cluster.provider,
-      imageTag,
-      staticAppIP: cluster.staticAppIP,
-    }),
-  );
 
   // Guardian app
   instances.push(
@@ -29,9 +24,9 @@ export function getDeployments(cluster: any, imageTag: string) {
     }),
   );
 
-  // Tenant app
+  // Organisation app
   instances.push(
-    new TenantApp(cluster.name, {
+    new OrganisationApp(cluster.name, {
       provider: cluster.provider,
       imageTag,
       staticAppIP: cluster.staticAppIP,
@@ -50,5 +45,44 @@ export function getDeployments(cluster: any, imageTag: string) {
   return instances;
 }
 
-export * from './hello-world.deployment';
-export * from './guardian.deployment';
+/**
+ * Creates third party application instance array
+ * @param cluster
+ */
+export function getThirdPartyDeployments(cluster: any) {
+  const instances = [];
+
+  instances.push(
+    new RedisApp(cluster.name, {
+      provider: cluster.provider,
+      version: '14.8.11',
+      staticAppIP: cluster.staticAppIP,
+    }),
+  );
+
+  instances.push(
+    new KratosApp(cluster.name, {
+      provider: cluster.provider,
+      version: '0.19.2',
+      staticAppIP: cluster.staticAppIP,
+    }),
+  );
+
+  instances.push(
+    new TraefikApp(cluster.name, {
+      provider: cluster.provider,
+      version: '10.3.2',
+      staticAppIP: cluster.staticAppIP,
+    }),
+  );
+
+  instances.push(
+    new KrakendApp(cluster.name, {
+      provider: cluster.provider,
+      version: '10.3.2',
+      staticAppIP: cluster.staticAppIP,
+    }),
+  );
+
+  return instances;
+}

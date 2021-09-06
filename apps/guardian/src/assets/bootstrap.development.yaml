@@ -41,6 +41,18 @@ loadbalancer:
     - strategy: 'RoundRobinStrategy'
       name: 'adv-example'
 
-database:
-  postgres:
+orm:
+  mikro:
+    type: 'postgresql'
     clientUrl: 'postgres://kratos:secret@localhost:5432/guardian_db?sslmode=disable&max_conns=20&max_idle_conns=4'
+    dbName: 'guardian_db'
+
+kratos:
+  config:
+    basePath: 'http://localhost:4433'
+    baseOptions:
+      withCredentials: false
+      timeout: 10000
+  admin:
+    configuration:
+      basePath: 'http://localhost:4434'

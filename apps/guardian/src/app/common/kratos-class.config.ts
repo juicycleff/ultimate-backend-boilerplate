@@ -3,26 +3,13 @@ import {
   KratosModuleOptions,
   KratosModuleOptionsFactory,
 } from '@ub-boilerplate/common/auth/kratos/kratos.options';
+import { BootConfig } from '@ultimate-backend/bootstrap';
 
 @Injectable()
 export class KratosClassConfig implements KratosModuleOptionsFactory {
+  constructor(private readonly config: BootConfig) {}
+
   createConfigOptions(): Promise<KratosModuleOptions> | KratosModuleOptions {
-    return {
-      public: {
-        basePath: 'http://127.0.0.1:4433',
-        baseOptions: {
-          // Setting this is very important as axios will send the CSRF cookie otherwise
-          // which causes problems with ORY Kratos' security detection.
-          // Timeout after 5 seconds.
-          withCredentials: false,
-          timeout: 10000,
-        },
-      },
-      admin: {
-        configuration: {
-          basePath: 'http://127.0.0.1:4434',
-        },
-      },
-    };
+    return this.config.get('kratos');
   }
 }

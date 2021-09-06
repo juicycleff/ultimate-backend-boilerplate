@@ -16,7 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@ub-boilerplate/common": ["libs/common/src/index.ts"],
-      "@ub-boilerplate/common/*": ["libs/common/src/lib/*"]
+      "@ub-boilerplate/common/*": ["libs/common/src/lib/*"],
+      "@ub-boilerplate/protobuf": ["libs/protobuf/src/index.ts"],
+      "@ub-boilerplate/protobuf/*": ["libs/protobuf/src/lib/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

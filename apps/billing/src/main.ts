@@ -11,8 +11,9 @@ async function bootstrap() {
   );
 
   await UBServiceFactory.create(app, true)
+    .withGrpc()
     .withSwagger()
-    .withPrefix('api/v1')
+    .withPrefix('api')
     .withValidation({
       skipMissingProperties: false,
       forbidUnknownValues: true,

@@ -10,7 +10,7 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": ["@ub-boilerplate/common/**"],
+            "allow": ["@ub-boilerplate/common/**", "@ub-boilerplate/protobuf/**"],
             "depConstraints": [
               {
                 "sourceTag": "*",

@@ -22,14 +22,14 @@ import { ConfigModule } from '@ultimate-backend/config';
 import { AppResolver } from './app.resolver';
 import { FormsModule } from './forms/forms.module';
 import { MikroOrmModule } from '@ub-boilerplate/common/database/mikro-orm';
-import { DbConfig } from './common/db-config';
 import { PermissionsModule } from '@ultimate-backend/permissions';
 import { PermissionsConfig } from './common/permissions.config';
+import { MikroDBConfig } from './common/mikrodb-config';
 
 @Module({
   imports: [
     MikroOrmModule.forRootAsync({
-      useClass: DbConfig,
+      useClass: MikroDBConfig,
     }),
     KratosModule.forRootAsync({
       useClass: KratosClassConfig,
@@ -50,6 +50,10 @@ import { PermissionsConfig } from './common/permissions.config';
           source: ConfigSource.File,
           filePath: path.resolve(__dirname, 'assets/config.yaml'),
         },
+        {
+          source: ConfigSource.Env,
+          prefix: 'ULTIMATE_BACKEND',
+        },
       ],
     }),
     BullModule.forRootAsync({
@@ -64,7 +68,6 @@ import { PermissionsConfig } from './common/permissions.config';
       filePath: path.resolve(__dirname, 'assets/bootstrap.yaml'),
       enableEnv: true,
     }),
-
     PermissionsModule.forRootAsync({
       useClass: PermissionsConfig,
     }),

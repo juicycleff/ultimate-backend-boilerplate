@@ -1,13 +1,11 @@
 {
-  "name": "mikro-orm-express-ts-example",
+  "name": "@ub-boilerplate/guardian-app",
   "version": "0.0.1",
-  "description": "Example integration of MikroORM into express (in typescript)",
-  "author": "Martin Adamek",
-  "license": "MIT",
-  "scripts": {
-    "start": "tsc && node dist/server",
-    "start:dev": "tsc-watch --onSuccess \"node dist/server\"",
-    "start:prod": "tsc && node dist/server"
+  "description": "auth services",
+  "author": "Rex Isaac Raphael",
+  "dependencies": {
+    "@mikro-orm/migrations": "^4.5.9",
+    "fastify-cookie": "^5.3.1"
   },
   "mikro-orm": {
     "useTsNode": false,

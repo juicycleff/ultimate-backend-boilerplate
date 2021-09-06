@@ -1,38 +1,48 @@
 {
   "version": 2,
-  "name": "Ultimate Backend",
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "name": "ultimate-backend",
   "endpoints": [
     {
-      "endpoint": "/limited-to-5000-per-second",
-      "extra_config": {
-        "github.com/devopsfaith/krakend-ratelimit/juju/router": {
-          "maxRate": 5000
-        }
-      },
-      "backend": [
-        {
-          "host": ["http://slow.backend.com/"],
-          "url_pattern": "/slow/endpoint",
-          "extra_config": {
-            "github.com/devopsfaith/krakend-ratelimit/juju/proxy": {
-              "maxRate": 100,
-              "capacity": 1
-            }
-          }
-        },
-        {
-          "host": ["http://fast.backend.com/"],
-          "url_pattern": "/fast/endpoint"
-        }
-      ]
-    },
-    {
-      "endpoint": "/v1/billing",
+      "endpoint": "/billing",
       "backend": [
         {
           "url_pattern": "/api/v1",
           "method": "GET",
-          "host": ["http://localhost:5002"]
+          "host": ["http://billing-svc:5000"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/guardian/forms",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/forms/login",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "is_collection": true,
+          "extra_config": {},
+          "host": ["http://guardian-svc:5000"],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/guardian/graphql",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/api/graphql",
+          "sd": "static",
+          "method": "POST",
+          "extra_config": {},
+          "host": ["http://guardian-svc:5000"],
+          "disable_host_sanitize": false
         }
       ]
     }

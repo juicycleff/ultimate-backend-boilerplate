@@ -9,6 +9,7 @@ import {
   SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum,
   V0alpha1Api,
   UiNode,
+  MetadataApi,
 } from '@ory/kratos-client';
 import { axios } from '../../clients';
 import { ApolloError } from 'apollo-server-fastify';
@@ -17,6 +18,7 @@ import { AccountIdentity } from '../account.type';
 @Injectable()
 export class KratosService implements OnModuleInit {
   private _kratos: V0alpha1Api;
+  private _metadata: MetadataApi;
 
   constructor(
     @Inject(KRATOS_OPTIONS_PROVIDER)
@@ -28,9 +30,25 @@ export class KratosService implements OnModuleInit {
     return this._kratos;
   }
 
+  public get metadata_api(): MetadataApi {
+    if (!this._kratos) throw new Error('Kratos metadata API not initialized');
+    return this._metadata;
+  }
+
   private init() {
-    if (this.options.public) {
-      this._kratos = new V0alpha1Api(new Configuration(this.options.public), '', axios);
+    if (this.options.config) {
+      this._kratos = new V0alpha1Api(
+        new Configuration(this.options.config),
+        this.options.config?.basePath || '',
+        axios,
+      );
+    }
+    if (this.options.admin) {
+      this._metadata = new MetadataApi(
+        new Configuration(this.options.admin),
+        this.options.admin?.basePath || '',
+        axios,
+      );
     }
   }
 
@@ -246,8 +264,7 @@ export class KratosService implements OnModuleInit {
    */
   async health(): Promise<string> {
     try {
-      const rsp = { data: { status: 'ok' } };
-
+      const rsp = await this.metadata_api.isAlive();
       return rsp.data.status;
     } catch (e) {
       if (e?.response?.data?.ui?.messages) {

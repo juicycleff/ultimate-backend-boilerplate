@@ -225,6 +225,80 @@
           }
         }
       }
+    },
+    "protobuf": {
+      "root": "libs/protobuf",
+      "sourceRoot": "libs/protobuf/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/protobuf",
+            "tsConfig": "libs/protobuf/tsconfig.lib.json",
+            "packageJson": "libs/protobuf/package.json",
+            "main": "libs/protobuf/src/index.ts",
+            "assets": ["libs/protobuf/*.md", "libs/protobuf/**/*.proto"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/protobuf/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/protobuf"],
+          "options": {
+            "jestConfig": "libs/protobuf/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "protoscrub": {
+          "executor": "./tools/executors/protoscrub:build",
+          "options": {
+            "rewriteProtobufName": true,
+            "packagePath": "libs/protobuf"
+          }
+        }
+      }
+    },
+    "shardow": {
+      "projectType": "application",
+      "root": "apps/shardow",
+      "sourceRoot": "apps/shardow",
+      "targets": {
+        "build": {
+          "executor": "@nx-go/nx-go:build",
+          "options": {
+            "outputPath": "dist/apps/shardow",
+            "main": "apps/shardow/main.go"
+          }
+        },
+        "build-p": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              "go build -buildmode=plugin -o ../../dist/apps/shardow/shardow.so"
+            ],
+            "cwd": "apps/shardow"
+          }
+        },
+        "serve": {
+          "executor": "@nx-go/nx-go:serve",
+          "options": {
+            "main": "apps/shardow/main.go"
+          }
+        },
+        "test": {
+          "executor": "@nx-go/nx-go:test"
+        },
+        "lint": {
+          "executor": "@nx-go/nx-go:lint"
+        }
+      }
     }
   }
 }

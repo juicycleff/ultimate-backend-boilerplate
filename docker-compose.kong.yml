@@ -1,0 +1,298 @@
+version: '3.8'
+
+services:
+  guardian:
+    image: 'ub-boilerplate/guardian'
+    build:
+      context: .
+      args:
+        APP_NAME: guardian
+        PORT: 5000
+      dockerfile: .deploy/base.Dockerfile
+    links:
+      - redis
+      - kratos
+      - postgresd
+    ports:
+      - '5000:5000'
+    container_name: guardian-svc
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - kratos
+      - redis
+      - postgresd
+    networks:
+      - intranet
+
+  organisation:
+    image: 'ub-boilerplate/organisation'
+    build:
+      context: .
+      args:
+        APP_NAME: organisation
+        PORT: 5001
+      dockerfile: .deploy/base.Dockerfile
+
+    ports:
+      - '5001:5001'
+    container_name: organisation-svc
+    links:
+      - redis
+    depends_on:
+      - kratos
+      - redis
+    networks:
+      - intranet
+
+  billing:
+    image: 'ub-boilerplate/billing'
+    build:
+      context: .
+      args:
+        APP_NAME: billing
+        PORT: 5002
+      dockerfile: .deploy/base.Dockerfile
+
+    links:
+      - redis
+    ports:
+      - '5002:5002'
+    container_name: billing-svc
+    depends_on:
+      - kratos
+      - redis
+    networks:
+      - intranet
+
+  application:
+    image: 'ub-boilerplate/application'
+    build:
+      context: .
+      args:
+        APP_NAME: application
+        PORT: 3333
+      dockerfile: .deploy/base.Dockerfile
+
+    links:
+      - redis
+    ports:
+      - '3333:3333'
+    container_name: application-svc
+    depends_on:
+      - kratos
+      - redis
+    networks:
+      - intranet
+
+  kratos-migrate:
+    container_name: kratos-migrate
+    image: oryd/kratos:v0.7.0-alpha.1
+    command: migrate -c /etc/config/kratos/kratos.yml sql -e --yes
+    volumes:
+      - type: bind
+        source: ./.deploy/ory/config
+        target: /etc/config/kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - postgresd
+    networks:
+      - intranet
+
+  kratos:
+    image: oryd/kratos:v0.7.0-alpha.1
+    container_name: kratos
+    ports:
+      - '4433:4433'
+      - '4434:4434'
+    command: serve --config /etc/config/kratos/kratos.yml all
+    volumes:
+      - type: bind
+        source: ./.deploy/ory/config
+        target: /etc/config/kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgresd:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - kratos-migrate
+      - postgresd
+      - zipkin
+    links:
+      - zipkin
+    networks:
+      - intranet
+
+  ################################ KONG START ################################
+  kong-migrate:
+    container_name: kong-migrate
+    command: kong migrations bootstrap
+    networks:
+      - intranet
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=postgresd
+      - KONG_PG_USER=kratos
+      - KONG_PG_PASSWORD=secret
+      - KONG_CASSANDRA_CONTACT_POINTS=postgresd
+    image: 'kong:latest'
+    links:
+      - postgresd
+    depends_on:
+      - postgresd
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  deck:
+    container_name: deck
+    image: kong/deck
+    build:
+      context: .
+      dockerfile: .deploy/deck.Dockerfile
+    networks:
+      - intranet
+
+  konga-prepare:
+    image: pantsel/konga:latest
+    container_name: konga-prepare
+    command: '-c prepare -a postgres -u postgresql://kratos:secret@postgresd:5432/konga_db'
+    networks:
+      - intranet
+    restart: on-failure
+    environment:
+      - DB_USER=kratos
+    depends_on:
+      - postgresd
+      - kong
+
+  konga:
+    image: pantsel/konga:latest
+    container_name: konga
+    restart: always
+    networks:
+      - intranet
+    environment:
+      - DB_ADAPTER=postgres
+      - DB_HOST=postgresd
+      - DB_USER=kratos
+      - DB_PASSWORD=secret
+      - TOKEN_SECRET=km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
+      - DB_DATABASE=konga_db
+      - NODE_ENV=production
+      - NO_AUTH=true
+    links:
+      - kong
+    depends_on:
+      - postgresd
+      - konga-prepare
+      - kong
+    ports:
+      - '1337:1337'
+
+  kong-migrations-up:
+    image: 'kong:latest'
+    container_name: 'kong-migrations-up'
+    command: kong migrations up && kong migrations finish
+    depends_on:
+      - postgresd
+      - kong-migrate
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=postgresd
+      - KONG_PG_USER=kratos
+      - KONG_PG_PASSWORD=secret
+      - KONG_CASSANDRA_CONTACT_POINTS=postgresd
+    networks:
+      - intranet
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  kong:
+    container_name: kong
+    networks:
+      - intranet
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=postgresd
+      - KONG_PG_USER=kratos
+      - KONG_PG_PASSWORD=secret
+      - KONG_CASSANDRA_CONTACT_POINTS=postgresd
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - 'KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl'
+    ports:
+      - '8000:8000'
+      - '8443:8443'
+      - '127.0.0.1:8001:8001'
+      - '127.0.0.1:8444:8444'
+    image: 'kong:latest'
+    healthcheck:
+      test: ['CMD', 'kong', 'health']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: on-failure:5
+    links:
+      - postgresd
+      - kong-migrate
+      - kong-migrations-up
+    depends_on:
+      - postgresd
+      - kong-migrate
+      - kong-migrations-up
+  ################################# KONG END #################################
+
+  postgresd:
+    container_name: postgresd
+    image: postgres:9.6
+    volumes:
+      - ./scripts/pg-init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=guardian_db,kong
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratos
+    networks:
+      - intranet
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', '${KONG_PG_USER:-kratos}']
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  redis:
+    container_name: redis
+    image: bitnami/redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    networks:
+      - intranet
+
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    networks:
+      - intranet
+
+  zipkin:
+    container_name: zipkin
+    ports:
+      - '9411:9411'
+    image: openzipkin/zipkin
+    networks:
+      - intranet
+
+networks:
+  intranet:
+    driver: bridge

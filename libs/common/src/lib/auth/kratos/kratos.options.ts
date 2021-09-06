@@ -12,7 +12,7 @@ export interface KratosOptions {
 }
 
 export interface KratosModuleOptions {
-  public?: Omit<Configuration, 'isJsonMime'>;
+  config?: Omit<Configuration, 'isJsonMime'>;
   admin?: KratosOptions;
   global?: boolean;
   debug?: boolean;

@@ -4,8 +4,8 @@ import * as aks from './clouds/aks';
 import * as eks from './clouds/eks';
 import * as gke from './clouds/gke';
 import * as dok from './clouds/dok';
+import * as local from './clouds/local';
 import * as deps from './deployments';
-import * as local from './local';
 
 // Create Kubernetes clusters.
 // Note: Comment out lines for any cluster you don't want to deploy.
@@ -29,15 +29,24 @@ const clusters: Cluster[] = [
   { name: 'local', provider: local.provider },
 ];
 
-// Export a list of URLs to access the demo app.
+// Export a list of URLs to access deployed apps.
 interface AppUrl {
   name: string;
   url: pulumi.Output<string>;
 }
 export let appUrls: AppUrl[] = [];
 
-const imageTag = 'latest';
+// Create third-party resources and apps.
+for (const cluster of clusters) {
+  const instances = deps.getThirdPartyDeployments(cluster);
 
+  for (const instance of instances) {
+    const instanceUrl: AppUrl = { name: cluster.name, url: instance.appUrl };
+    appUrls = appUrls.concat(instanceUrl);
+  }
+}
+
+const imageTag = 'latest';
 // Create the application on each of the selected clusters.
 for (const cluster of clusters) {
   const instances = deps.getDeployments(cluster, imageTag);

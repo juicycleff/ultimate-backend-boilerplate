@@ -1,0 +1,19 @@
+{
+  "name": "@ub-boilerplate/billing-app",
+  "version": "0.0.1",
+  "description": "billing services",
+  "author": "Rex Isaac Raphael",
+  "dependencies": {
+    "@mikro-orm/migrations": "^4.5.9",
+    "@nestjs/graphql": "^9.0.4",
+    "@apollo/federation": "^0.29.0",
+    "apollo-server-fastify": "^3.3.0"
+  },
+  "mikro-orm": {
+    "useTsNode": false,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./src/mikro-orm.config.js"
+    ]
+  }
+}

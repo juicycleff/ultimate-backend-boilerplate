@@ -1,7 +1,7 @@
-name: organisation
+name: organisations
 port: 5001
-description: organisation api spec
-tag: organisation-svc
+description: organisations api spec
+tag: organisations-svc
 version: latest
 
 clients:
@@ -13,8 +13,8 @@ clients:
 
 transport:
   grpc:
-    package: 'organisation'
-    protoPath: 'service.proto'
+    package: 'ultimate_backend.srv.organisation'
+    protoPath: 'dist/apps/organisation/assets/service.proto'
     url: 0.0.0.0:{{port}}
 
 swagger:
@@ -25,3 +25,9 @@ swagger:
         type: 'http'
         scheme: 'bearer'
         name: 'Authorization'
+
+orm:
+  mikro:
+    type: 'postgresql'
+    clientUrl: 'postgres://kratos:secret@localhost:5432/organisation_db?sslmode=disable&max_conns=20&max_idle_conns=4'
+    dbName: 'organisation_db'

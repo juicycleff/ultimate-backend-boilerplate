@@ -1,0 +1,7 @@
+database:
+  postgres:
+    clientUrl: 'postgres://kratos:secret@localhost:5432/guardian_db?sslmode=disable&max_conns=20&max_idle_conns=4'
+
+files:
+  securityCert: 'dist/secrets/cert.pem'
+  securityKey: 'dist/secrets/key.pem'

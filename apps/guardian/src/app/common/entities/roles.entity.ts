@@ -1,7 +1,19 @@
-import { Entity } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { Entity, Property, Index, OneToOne } from '@mikro-orm/core';
+import { IsolatedEntity } from '@ub-boilerplate/common/database';
+import { OsoClass } from '@ultimate-backend/permissions';
 
 @Entity({
-  tableName: 'roles',
+  tableName: 'guardian_roles',
 })
-export class RolesEntity extends BaseEntity {}
+@Index({ properties: ['name', 'organisationName'] })
+@OsoClass({ name: 'Role' })
+export class RolesEntity extends IsolatedEntity {
+  @OneToOne({ nullable: true, onDelete: 'set null' })
+  inherit?: RolesEntity;
+
+  @Property()
+  path: string;
+
+  @Property()
+  name: string;
+}

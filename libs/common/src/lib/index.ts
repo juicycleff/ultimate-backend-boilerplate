@@ -4,6 +4,7 @@ export * from './decorators';
 export * from './auth';
 export * from './interceptors';
 export * from './validators';
+export * from './exceptions';
 export * from './utils';
 export * from './request';
 export * from './middleware';

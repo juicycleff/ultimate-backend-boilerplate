@@ -8,9 +8,11 @@ services:
       args:
         APP_NAME: guardian
         PORT: 5000
-      dockerfile: .deploy/Dockerfile
+      dockerfile: .deploy/base.Dockerfile
     links:
       - redis
+      - kratos
+      - postgresd
     ports:
       - '5000:5000'
     container_name: guardian-svc
@@ -19,6 +21,7 @@ services:
     depends_on:
       - kratos
       - redis
+      - postgresd
     networks:
       - intranet
 
@@ -29,7 +32,7 @@ services:
       args:
         APP_NAME: organisation
         PORT: 5001
-      dockerfile: .deploy/Dockerfile
+      dockerfile: .deploy/base.Dockerfile
 
     ports:
       - '5001:5001'
@@ -49,7 +52,7 @@ services:
       args:
         APP_NAME: billing
         PORT: 5002
-      dockerfile: .deploy/Dockerfile
+      dockerfile: .deploy/base.Dockerfile
 
     links:
       - redis
@@ -69,7 +72,7 @@ services:
       args:
         APP_NAME: application
         PORT: 3333
-      dockerfile: .deploy/Dockerfile
+      dockerfile: .deploy/base.Dockerfile
 
     links:
       - redis
@@ -82,9 +85,10 @@ services:
     networks:
       - intranet
 
+  ################################## KRATOS START #################################
   kratos-migrate:
     container_name: kratos-migrate
-    image: oryd/kratos:v0.7.0-alpha.1
+    image: oryd/kratos:latest
     command: migrate -c /etc/config/kratos/kratos.yml sql -e --yes
     volumes:
       - type: bind
@@ -98,7 +102,7 @@ services:
       - intranet
 
   kratos:
-    image: oryd/kratos:v0.7.0-alpha.1
+    image: oryd/kratos:latest
     container_name: kratos
     ports:
       - '4433:4433'
@@ -118,10 +122,12 @@ services:
       - zipkin
     networks:
       - intranet
+  ################################## KRATOS START #################################
 
+  ################################# KRAKEND START #################################
   krakend:
     container_name: krakend
-    image: devopsfaith/krakend
+    image: devopsfaith/krakend:config-watcher
     command: run -d -c /etc/krakend/krakend.json
     ports:
       - '8080:8080'
@@ -129,23 +135,18 @@ services:
       - intranet
     volumes:
       - ./.deploy/krakend:/etc/krakend
+  ################################## KRAKEND END ##################################
 
-  zipkin:
-    container_name: zipkin
-    ports:
-      - '9411:9411'
-    image: openzipkin/zipkin
-    networks:
-      - intranet
-
+  ############################### THIRD-PARTY START ###############################
   postgresd:
     container_name: postgresd
     image: postgres:9.6
     volumes:
-      - ./scripts/init-service-db.sh:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/pg-init-scripts:/docker-entrypoint-initdb.d
     ports:
       - '5432:5432'
     environment:
+      - POSTGRES_MULTIPLE_DATABASES=guardian_db,organisation_db
       - POSTGRES_USER=kratos
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratos
@@ -154,7 +155,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:5.0-alpine
+    image: bitnami/redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
@@ -169,6 +170,15 @@ services:
       - '27017:27017'
     networks:
       - intranet
+
+  zipkin:
+    container_name: zipkin
+    ports:
+      - '9411:9411'
+    image: openzipkin/zipkin
+    networks:
+      - intranet
+  ################################ THIRD-PARTY END ################################
 
 networks:
   intranet:

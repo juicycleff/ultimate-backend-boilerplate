@@ -6,4 +6,5 @@
 !workspace.json
 !ub.json
 !tsconfig.*.json
+!.deploy
 !.*.json
