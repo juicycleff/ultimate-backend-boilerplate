@@ -21,16 +21,11 @@ import { ConfigSource } from '@ultimate-backend/common';
 import { ConfigModule } from '@ultimate-backend/config';
 import { AppResolver } from './app.resolver';
 import { FormsModule } from './forms/forms.module';
-import { MikroOrmModule } from '@ub-boilerplate/common/database/mikro-orm';
 import { PermissionsModule } from '@ultimate-backend/permissions';
 import { PermissionsConfig } from './common/permissions.config';
-import { MikroDBConfig } from './common/mikrodb-config';
 
 @Module({
   imports: [
-    MikroOrmModule.forRootAsync({
-      useClass: MikroDBConfig,
-    }),
     KratosModule.forRootAsync({
       useClass: KratosClassConfig,
     }),

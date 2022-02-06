@@ -6,9 +6,10 @@ import { AccountsQueriesResolver } from './accounts-queries.resolver';
 import { AccountsController } from './accounts.controller';
 import { AccountsResolver } from './accounts.resolver';
 import { AccountsService } from './accounts.service';
+import { PersistenceModule } from '@ub-boilerplate/persistence';
 
 @Module({
-  imports: [PasswordModule],
+  imports: [PersistenceModule, PasswordModule],
   providers: [
     AccountsService,
     AccountsResolver,

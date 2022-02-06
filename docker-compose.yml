@@ -146,7 +146,7 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_MULTIPLE_DATABASES=guardian_db,organisation_db
+      - POSTGRES_MULTIPLE_DATABASES=guardian_db,organisation_db,billing_db
       - POSTGRES_USER=kratos
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratos

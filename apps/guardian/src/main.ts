@@ -3,23 +3,11 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { UBServiceFactory } from '@ultimate-backend/core';
 
 import { AppModule } from './app/app.module';
-import * as path from 'path';
-import { runMigrations } from '@ub-boilerplate/common/database';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
+  const app = await NestFactory.create(AppModule);
 
-  const migrationPath = path.resolve(
-    __dirname,
-    '../../../',
-    'apps/guardian/src/migrations',
-  );
-  await runMigrations(app, migrationPath);
-
-  await UBServiceFactory.create(app, true)
+  await UBServiceFactory.create(app, false)
     .withSwagger()
     .withPrefix('api')
     .withValidation({

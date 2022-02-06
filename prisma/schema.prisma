@@ -1,0 +1,13 @@
+datasource db {
+  provider = env("DATABASE_PROVIDER") // "postgresql"
+  url      = env("DATABASE_URL") // "postgresql://postgres:mysecretpassword@localhost:5432/postgres?schema=ub-schema"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserProfile {
+  id          Int     @id @default(autoincrement())
+  accountId   String  @unique
+}

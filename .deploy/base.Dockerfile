@@ -45,6 +45,8 @@ RUN npm i -g npm@latest
 RUN npm i @nrwl/cli -g
 
 ENV NODE_ENV production
+RUN nx run persistence:gen
+RUN nx run persistence:migrate
 RUN nx build $APP_NAME --configuration=production --generatePackageJson --with-deps
 
 

@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "cli": {
-    "defaultCollection": "@nrwl/nest"
-  },
-  "defaultProject": "organisation",
   "projects": {
     "application": {
       "root": "apps/application",
@@ -43,7 +39,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/application/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -53,7 +50,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "billing": {
       "root": "apps/billing",
@@ -93,7 +91,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/billing/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -103,7 +102,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "common": {
       "root": "libs/common",
@@ -114,7 +114,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/common/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -124,7 +125,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "guardian": {
       "root": "apps/guardian",
@@ -164,7 +166,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/guardian/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -174,7 +177,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "organisation": {
       "root": "apps/organisation",
@@ -214,7 +218,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/organisation/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -224,7 +229,60 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
+    },
+    "persistence": {
+      "root": "libs/persistence",
+      "sourceRoot": "libs/persistence/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/persistence",
+            "tsConfig": "libs/persistence/tsconfig.lib.json",
+            "packageJson": "libs/persistence/package.json",
+            "main": "libs/persistence/src/index.ts",
+            "assets": ["libs/persistence/*.md", "libs/persistence/**/*.prisma"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/persistence/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/persistence"],
+          "options": {
+            "jestConfig": "libs/persistence/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "studio": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx prisma studio  --port 5556  --schema=./prisma/schema.prisma"
+          }
+        },
+        "migrate": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx prisma migrate dev --name init --schema=./prisma/schema.prisma"
+          }
+        },
+        "gen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx prisma generate --schema=./prisma/schema.prisma"
+          }
+        }
+      },
+      "tags": []
     },
     "protobuf": {
       "root": "libs/protobuf",
@@ -246,7 +304,8 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/protobuf/**/*.ts"]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -263,7 +322,8 @@
             "packagePath": "libs/protobuf"
           }
         }
-      }
+      },
+      "tags": []
     },
     "shardow": {
       "projectType": "application",
@@ -298,7 +358,8 @@
         "lint": {
           "executor": "@nx-go/nx-go:lint"
         }
-      }
+      },
+      "tags": []
     }
   }
 }

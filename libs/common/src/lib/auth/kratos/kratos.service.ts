@@ -2,12 +2,8 @@ import { HttpException, Inject, Injectable, OnModuleInit } from '@nestjs/common'
 import { KRATOS_OPTIONS_PROVIDER, KratosModuleOptions } from './kratos.options';
 import {
   Configuration,
-  SubmitSelfServiceLoginFlowWithPasswordMethodBodyMethodEnum,
-  SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum,
-  SubmitSelfServiceRegistrationFlowWithPasswordMethodBodyMethodEnum,
-  SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum,
-  SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum,
-  V0alpha1Api,
+  SessionAuthenticationMethodMethodEnum,
+  V0alpha2Api,
   UiNode,
   MetadataApi,
 } from '@ory/kratos-client';
@@ -17,7 +13,7 @@ import { AccountIdentity } from '../account.type';
 
 @Injectable()
 export class KratosService implements OnModuleInit {
-  private _kratos: V0alpha1Api;
+  private _kratos: V0alpha2Api;
   private _metadata: MetadataApi;
 
   constructor(
@@ -25,7 +21,7 @@ export class KratosService implements OnModuleInit {
     private readonly options: KratosModuleOptions,
   ) {}
 
-  public get public_api(): V0alpha1Api {
+  public get public_api(): V0alpha2Api {
     if (!this._kratos) throw new Error('Kratos public API not initialized');
     return this._kratos;
   }
@@ -37,7 +33,7 @@ export class KratosService implements OnModuleInit {
 
   private init() {
     if (this.options.config) {
-      this._kratos = new V0alpha1Api(
+      this._kratos = new V0alpha2Api(
         new Configuration(this.options.config),
         this.options.config?.basePath || '',
         axios,
@@ -77,11 +73,77 @@ export class KratosService implements OnModuleInit {
           options?.flowOption,
         );
 
-      const rsp = await this.public_api.submitSelfServiceLoginFlow(flow.id, {
+      const rsp = await this.public_api.submitSelfServiceLoginFlow(flow.id, '', {
         password: password,
         password_identifier: identifier,
         csrf_token: options?.csrfToken,
-        method: SubmitSelfServiceLoginFlowWithPasswordMethodBodyMethodEnum.Password,
+        method: SessionAuthenticationMethodMethodEnum.Password,
+      });
+
+      return rsp.data;
+    } catch (e) {
+      if (e?.response?.data?.ui?.messages) {
+        throw new HttpException(e.response.data.ui.messages, 400);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Login with totp. Basically a wrapper around kratos
+   * @param identifier
+   * @param password
+   * @param options
+   */
+  async totpLogin(
+    totpCode: string,
+    options?: { csrfToken: string; withRefresh: boolean; flowOption: any },
+  ) {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceLoginFlowWithoutBrowser(
+          options?.withRefresh,
+          options?.flowOption,
+        );
+
+      const rsp = await this.public_api.submitSelfServiceLoginFlow(flow.id, '', {
+        totp_code: totpCode,
+        csrf_token: options?.csrfToken,
+        method: SessionAuthenticationMethodMethodEnum.Totp,
+      });
+
+      return rsp.data;
+    } catch (e) {
+      if (e?.response?.data?.ui?.messages) {
+        throw new HttpException(e.response.data.ui.messages, 400);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * @description Login with totp. Basically a wrapper around kratos
+   * @param identifier
+   * @param password
+   * @param options
+   */
+  async oidcLogin(
+    provider: string,
+    traits?: any,
+    options?: { csrfToken: string; withRefresh: boolean; flowOption: any },
+  ) {
+    try {
+      const { data: flow } =
+        await this.public_api.initializeSelfServiceLoginFlowWithoutBrowser(
+          options?.withRefresh,
+          options?.flowOption,
+        );
+
+      const rsp = await this.public_api.submitSelfServiceLoginFlow(flow.id, '', {
+        provider: provider,
+        traits: traits,
+        csrf_token: options?.csrfToken,
+        method: SessionAuthenticationMethodMethodEnum.Oidc,
       });
 
       return rsp.data;
@@ -118,8 +180,7 @@ export class KratosService implements OnModuleInit {
         password: password,
         csrf_token: options?.csrfToken,
         traits,
-        method:
-          SubmitSelfServiceRegistrationFlowWithPasswordMethodBodyMethodEnum.Password,
+        method: 'Password',
       });
 
       return rsp.data;
@@ -190,7 +251,7 @@ export class KratosService implements OnModuleInit {
         );
 
       const rsp = await this.public_api.submitSelfServiceRecoveryFlow(flow.id, token, {
-        method: SubmitSelfServiceRecoveryFlowWithLinkMethodBodyMethodEnum.Link,
+        method: 'link',
         csrf_token: options.csrfToken,
         email: email,
       });
@@ -225,7 +286,7 @@ export class KratosService implements OnModuleInit {
         flow.id,
         token,
         {
-          method: SubmitSelfServiceVerificationFlowWithLinkMethodBodyMethodEnum.Link,
+          method: 'link',
           csrf_token: options.csrfToken,
           email: email,
         },
@@ -322,7 +383,7 @@ export class KratosService implements OnModuleInit {
         flow.id,
         xSessionToken,
         {
-          method: SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum.Profile,
+          method: 'profile',
           csrf_token: options.csrfToken,
           traits,
         },
@@ -359,7 +420,7 @@ export class KratosService implements OnModuleInit {
         flow.id,
         xSessionToken,
         {
-          method: SubmitSelfServiceSettingsFlowWithPasswordMethodBodyMethodEnum.Password,
+          method: 'password',
           csrf_token: options.csrfToken,
           password,
         },

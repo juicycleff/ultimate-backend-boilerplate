@@ -14,7 +14,6 @@ export class GqlConfigProvider implements GqlOptionsFactory {
 
     return {
       autoSchemaFile: true,
-      tracing: true,
       fieldResolverEnhancers: ['guards'],
       context: ({ req, res, payload, connection, request, reply }) => {
         return {

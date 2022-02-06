@@ -17,6 +17,7 @@
     "paths": {
       "@ub-boilerplate/common": ["libs/common/src/index.ts"],
       "@ub-boilerplate/common/*": ["libs/common/src/lib/*"],
+      "@ub-boilerplate/persistence": ["libs/persistence/src/index.ts"],
       "@ub-boilerplate/protobuf": ["libs/protobuf/src/index.ts"],
       "@ub-boilerplate/protobuf/*": ["libs/protobuf/src/lib/*"]
     }
