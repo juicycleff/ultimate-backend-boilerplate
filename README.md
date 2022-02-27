@@ -8,6 +8,11 @@ Coming soon
 
 There are also many [community plugins](https://nx.dev/nx-community) you could add.
 
+## Get started
+
+Install pnpm `npm i -g pnpm`.
+
+
 ## Generate an application
 
 Run `ub service create my-ub-servuce` to generate a ub service.

@@ -19,7 +19,8 @@
       "@ub-boilerplate/common/*": ["libs/common/src/lib/*"],
       "@ub-boilerplate/persistence": ["libs/persistence/src/index.ts"],
       "@ub-boilerplate/protobuf": ["libs/protobuf/src/index.ts"],
-      "@ub-boilerplate/protobuf/*": ["libs/protobuf/src/lib/*"]
+      "@ub-boilerplate/protobuf/*": ["libs/protobuf/src/lib/*"],
+      "@ub/systems-cli": ["libs/systems-cli/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

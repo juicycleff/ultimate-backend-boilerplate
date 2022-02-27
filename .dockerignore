@@ -1,10 +1,15 @@
 *
 !libs/**
 !apps/**
+!tools/**
+!scripts/**
+!prisma/**
 !package*.json
 !nx.json
 !workspace.json
+!project.json
 !ub.json
 !tsconfig.*.json
 !.deploy
 !.*.json
+!pnpm-*.yaml

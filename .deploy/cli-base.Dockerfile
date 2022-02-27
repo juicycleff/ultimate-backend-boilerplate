@@ -24,9 +24,10 @@ RUN mkdir /user && \
 
 
 ######################################################################
-FROM node:16-alpine as dev-dependencies
+FROM node:14-alpine as dev-dependencies
 ######################################################################
 ARG APP_NAME
+ARG OPTIONS
 WORKDIR /usr/src/app
 COPY apps apps
 COPY libs libs
@@ -37,9 +38,10 @@ RUN pnpm i --frozen-lockfile -s
 
 
 #######################################################################################
-FROM node:16-alpine AS builder
+FROM node:14-alpine AS builder
 #######################################################################################
 ARG APP_NAME
+ARG OPTIONS
 WORKDIR /usr/src/app
 COPY --from=dev-dependencies /usr/src/app /usr/src/app
 
@@ -56,10 +58,11 @@ RUN nx build $APP_NAME --configuration=production --generatePackageJson --with-d
 
 
 #######################################################################################
-FROM node:16-alpine AS final
+FROM node:14-alpine AS final
 #######################################################################################
-ARG PORT
+ARG OPTIONS
 ARG APP_NAME
+ARG COM_ARG
 
 # Import the user and group files from the first stage.
 COPY --from=utils /user/group /user/passwd /etc/
@@ -67,6 +70,7 @@ COPY --from=utils /tini /sbin/tini
 
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
+COPY --from=builder /usr/src/app/libs libs
 
 ENV NODE_ENV production
 
@@ -75,18 +79,12 @@ RUN npm i pnpm -g
 RUN pnpm i --prod
 RUN pnpm add tslib --prod
 
-EXPOSE $PORT
-
 # Perform any further action as an unprivileged user.
 USER nobody:nobody
 
 # Set tini as entrypoint
 ENTRYPOINT ["tini", "--"]
 
-ARG heapSize=1200
-ENV heapSize=${heapSize}
-
-ARG nodeArguments=''
-ENV nodeArguments=${nodeArguments}
-
-CMD node --max-old-space-size=${heapSize} ${nodeArguments} main.js
+# RUN ECHO $COM_ARG > "node main.js $OPTIONS"
+# todo: making  this dynamic
+CMD node main.js migrate db

@@ -1,6 +1,31 @@
 version: '3.8'
 
 services:
+  migrator:
+    image: 'ub-boilerplate/nighthawk-migrate-cmd'
+    build:
+      context: .
+      args:
+        APP_NAME: nighthawk
+        OPTIONS: migrate db
+      dockerfile: .deploy/cli-base.Dockerfile
+    links:
+      - redis
+      - kratos
+      - postgresd
+    ports:
+      - '5000:5000'
+    container_name: nighthawk-cmd
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL="postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema"
+    depends_on:
+      - kratos
+      - redis
+      - postgresd
+    networks:
+      - intranet
+
   guardian:
     image: 'ub-boilerplate/guardian'
     build:

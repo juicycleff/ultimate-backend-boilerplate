@@ -24,39 +24,34 @@ RUN mkdir /user && \
 
 
 ######################################################################
-FROM node:16-alpine as dev-dependencies
+FROM node:14-alpine as dev-dependencies
 ######################################################################
 ARG APP_NAME
 WORKDIR /usr/src/app
 COPY apps apps
 COPY libs libs
-COPY package*.json pnpm-lock.yaml nx.json workspace.json ub.json tsconfig.*.json ./
-
-RUN npm i pnpm -g
-RUN pnpm i --frozen-lockfile -s
+COPY package*.json pnpm-lock*.yaml nx.json workspace.json ub.json tsconfig.*.json ./
+RUN npm ci --silent
 
 
 #######################################################################################
-FROM node:16-alpine AS builder
+FROM node:14-alpine AS builder
 #######################################################################################
 ARG APP_NAME
 WORKDIR /usr/src/app
 COPY --from=dev-dependencies /usr/src/app /usr/src/app
 
-RUN npm i -g pnpm
-RUN pnpm i @nrwl/cli -g
+RUN npm i -g npm@latest
+RUN npm i @nrwl/cli -g
 
 ENV NODE_ENV production
-RUN alias pnx="pnpm exec nx --"
-
-RUN nx run persistence:gen
-# RUN nx run persistence:migrate
-
+RUN nx gen persistence
+RUN nx migrate persistence
 RUN nx build $APP_NAME --configuration=production --generatePackageJson --with-deps
 
 
 #######################################################################################
-FROM node:16-alpine AS final
+FROM node:14-alpine AS final
 #######################################################################################
 ARG PORT
 ARG APP_NAME
@@ -70,10 +65,8 @@ COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
 
 ENV NODE_ENV production
 
-RUN npm i pnpm -g
 # install requird deps
-RUN pnpm i --prod
-RUN pnpm add tslib --prod
+RUN npm i --silent --production
 
 EXPOSE $PORT
 

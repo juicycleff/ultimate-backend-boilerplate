@@ -19,30 +19,32 @@ import {
 } from './typings';
 import { Provider, Scope } from '@nestjs/common';
 
-export const createMikroOrmProvider = (): Provider => ({
-  provide: MikroORM,
-  useFactory: async (options?: MikroOrmModuleOptions) => {
-    if (options?.autoLoadEntities) {
-      options.entities = [...(options.entities || []), ...REGISTERED_ENTITIES.values()];
-      options.entitiesTs = [
-        ...(options.entitiesTs || []),
-        ...REGISTERED_ENTITIES.values(),
-      ];
-      delete options.autoLoadEntities;
-    }
+export const createMikroOrmProvider = (): Provider => {
+  return {
+    provide: MikroORM,
+    useFactory: async (options?: MikroOrmModuleOptions) => {
+      if (options?.autoLoadEntities) {
+        options.entities = [...(options.entities || []), ...REGISTERED_ENTITIES.values()];
+        options.entitiesTs = [
+          ...(options.entitiesTs || []),
+          ...REGISTERED_ENTITIES.values(),
+        ];
+        delete options.autoLoadEntities;
+      }
 
-    REGISTERED_ENTITIES.clear();
+      REGISTERED_ENTITIES.clear();
 
-    if (!options || Object.keys(options).length === 0) {
-      const config = await ConfigurationLoader.getConfiguration();
-      config.set('logger', logger.log.bind(logger));
-      options = config as unknown as MikroOrmModuleOptions;
-    }
+      if (!options || Object.keys(options).length === 0) {
+        const config = await ConfigurationLoader.getConfiguration();
+        config.set('logger', logger.log.bind(logger));
+        options = config as unknown as MikroOrmModuleOptions;
+      }
 
-    return MikroORM.init(options);
-  },
-  inject: [MIKRO_ORM_MODULE_OPTIONS],
-});
+      return MikroORM.init(options);
+    },
+    inject: [MIKRO_ORM_MODULE_OPTIONS],
+  };
+};
 
 export const createMikroOrmEntityManagerProvider = (
   scope = Scope.DEFAULT,
