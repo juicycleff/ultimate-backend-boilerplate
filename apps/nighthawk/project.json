@@ -1,0 +1,52 @@
+{
+  "root": "apps/nighthawk",
+  "sourceRoot": "apps/nighthawk/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/nighthawk",
+        "main": "apps/nighthawk/src/main.ts",
+        "tsConfig": "apps/nighthawk/tsconfig.app.json",
+        "assets": ["apps/nighthawk/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/nighthawk/src/environments/environment.ts",
+              "with": "apps/nighthawk/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "nighthawk:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/nighthawk/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/nighthawk"],
+      "options": {
+        "jestConfig": "apps/nighthawk/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

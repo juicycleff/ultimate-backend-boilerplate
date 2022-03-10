@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigValue } from '@ultimate-backend/config';
 import zxcvbn from 'zxcvbn-typescript';
-import { PasswordScoreEnum } from './queries';
+import { PasswordScoreEnum } from './dtos';
 import { SecurityConfig } from '@ub-boilerplate/common';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class PasswordService {
   @ConfigValue('security', {})
   securityConfig: SecurityConfig;
 
-  private getScore(score): PasswordScoreEnum {
+  private static getScore(score): PasswordScoreEnum {
     switch (score) {
       case 0:
         return PasswordScoreEnum.TooWeak;
@@ -28,6 +28,6 @@ export class PasswordService {
 
   scorePassword(password: string): PasswordScoreEnum {
     const passwordScore = zxcvbn(password);
-    return this.getScore(passwordScore.score);
+    return PasswordService.getScore(passwordScore.score);
   }
 }

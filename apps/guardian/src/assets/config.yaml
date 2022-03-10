@@ -1,14 +1,10 @@
 security:
-  jwtKey: '4125442A472D4B614E645267556B58703273357638792F423F4528482B4D6251'
-  cookieId: 'idtoken'
+  jwtKey: 4125442A472D4B614E645267556B58703273357638792F423F4528482B4D6251
+  cookieId: idtoken
 
   otp:
     duration: 120
     length: 6
-
-database:
-  postgres:
-    clientUrl: 'postgres://kratos:secret@localhost:5432/guardian_db?sslmode=disable&max_conns=20&max_idle_conns=4'
 
 features:
   api:
@@ -22,9 +18,9 @@ features:
 
 logging:
   sentry:
-    dsn: 'https://dgfdfg56jy53673o7rkuyd@o439891.ingest.sentry.io/79898575'
+    dsn: https://dgfdfg56jy53673o7rkuyd@o439891.ingest.sentry.io/79898575
     environment: Staging
 
 files:
-  securityCert: 'dist/secrets/cert.pem'
-  securityKey: 'dist/secrets/key.pem'
+  securityCert: dist/secrets/cert.pem
+  securityKey: dist/secrets/key.pem

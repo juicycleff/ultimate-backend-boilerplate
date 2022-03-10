@@ -1,13 +1,41 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccountsService } from './accounts.service';
 import {
   AccountAvailableRequest,
+  AccountResponse,
   CreateAccountRequest,
+  UpdateAccountPasswordRequest,
   UpdateAccountRequest,
+} from './dtos';
+import {
+  Auth,
+  Identity,
+  IExpressResponse,
+  IFastifyReply,
+  IFastifyRequest,
+  Secure,
+} from '@ub-boilerplate/common';
+import { GetAccountQuery } from './queries';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import {
+  CreateAccountCommand,
+  RequestAccountRecoveryCommand,
+  UpdateAccountCommand,
+  UpdateAccountPasswordCommand,
 } from './commands';
-import { AccountResponse } from './queries';
-import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
 
 @ApiTags('accounts')
 @Controller('accounts')
@@ -15,7 +43,8 @@ import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
 export class AccountsController {
   constructor(
     private readonly accountService: AccountsService,
-    private readonly kratos: KratosService,
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
   ) {}
 
   /**
@@ -24,13 +53,13 @@ export class AccountsController {
   @Get('/')
   @Secure({ claim: 'account' })
   async getAccount(@Auth() identity: Identity): Promise<AccountResponse> {
-    return this.kratos.whoami(identity.sessionId);
+    const rsp = await this.queryBus.execute(new GetAccountQuery(identity.sessionId));
+    return rsp.identity;
   }
 
   @Post('/')
   async create(@Body() body: CreateAccountRequest): Promise<AccountResponse> {
-    const resp = await this.accountService.create(body);
-    return resp.toResponse();
+    return await this.commandBus.execute(new CreateAccountCommand(body));
   }
 
   @Secure({ claim: 'account' })
@@ -40,7 +69,7 @@ export class AccountsController {
     @Param('accountId') accountId: string,
     @Body() body: UpdateAccountRequest,
   ): Promise<AccountResponse> {
-    return await this.accountService.update(accountId, body);
+    return this.commandBus.execute(new UpdateAccountCommand(accountId, body));
   }
 
   @Get('/available')
@@ -48,10 +77,30 @@ export class AccountsController {
     return await this.accountService.isAvailable(body.identity);
   }
 
-  @Secure({ claim: 'service' })
-  @Put('/:accountId/expirePassword')
-  async expirePassword(@Param('accountId') accountId: string): Promise<boolean> {
-    return await this.accountService.passwordExpire(accountId);
+  @Post('/update-password')
+  async updatePassword(
+    @Auth() identity: Identity,
+    @Body() body: UpdateAccountPasswordRequest,
+    @Req() req: IFastifyRequest,
+    @Res({ passthrough: true }) res: IFastifyReply | IExpressResponse,
+  ): Promise<boolean> {
+    return this.commandBus.execute(
+      new UpdateAccountPasswordCommand(identity, body, {
+        res: res,
+        reply: res,
+        req: req,
+      }),
+    );
+  }
+
+  @Post('/recover')
+  async requestAccountRecovery(
+    @Query('email') email: string,
+    @Auth() identity: Identity,
+  ): Promise<boolean> {
+    return this.commandBus.execute(
+      new RequestAccountRecoveryCommand(email, identity.sessionId),
+    );
   }
 
   @Secure({ claim: 'account' })

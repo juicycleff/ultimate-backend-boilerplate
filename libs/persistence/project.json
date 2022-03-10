@@ -1,0 +1,67 @@
+{
+  "root": "libs/persistence",
+  "sourceRoot": "libs/persistence/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/persistence",
+        "tsConfig": "libs/persistence/tsconfig.lib.json",
+        "packageJson": "libs/persistence/package.json",
+        "main": "libs/persistence/src/index.ts",
+        "assets": ["libs/persistence/*.md", "libs/persistence/**/*.prisma"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/persistence/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/persistence"],
+      "options": {
+        "jestConfig": "libs/persistence/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "studio": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "pnpm dlx prisma studio  --port 5556  --schema=./libs/persistence/schema.prisma"
+      }
+    },
+    "migrate-init": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "pnpm dlx prisma migrate dev --name init --schema=./libs/persistence/schema.prisma --preview-feature"
+      }
+    },
+    "migrate": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "pnpm dlx prisma migrate dev --name new-change --schema=./libs/persistence/schema.prisma --preview-feature"
+      },
+      "cwd": "libs/persistence"
+    },
+    "gen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "pnpm dlx prisma generate --schema=./libs/persistence/schema.prisma"
+      },
+      "cwd": "libs/persistence"
+    },
+    "gen:watch": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "pnpm dlx prisma generate --schema=./libs/persistence/schema.prisma  --watch"
+      },
+      "cwd": "libs/persistence"
+    }
+  },
+  "tags": []
+}

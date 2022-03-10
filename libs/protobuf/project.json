@@ -1,0 +1,49 @@
+{
+  "root": "libs/protobuf",
+  "sourceRoot": "libs/protobuf/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/protobuf",
+        "tsConfig": "libs/protobuf/tsconfig.lib.json",
+        "packageJson": "libs/protobuf/package.json",
+        "main": "libs/protobuf/src/index.ts",
+        "assets": ["libs/protobuf/*.md", "libs/protobuf/**/*.proto"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/protobuf/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/protobuf"],
+      "options": {
+        "jestConfig": "libs/protobuf/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "transpile": {
+      "executor": "./tools/executors/protoscrub:build",
+      "options": {
+        "rewriteProtobufName": true,
+        "packagePath": "libs/protobuf"
+      }
+    },
+    "transpile-win": {
+      "executor": "./tools/executors/protoscrub:build",
+      "options": {
+        "rewriteProtobufName": true,
+        "isWindows": true,
+        "packagePath": "libs/protobuf"
+      }
+    }
+  },
+  "tags": []
+}

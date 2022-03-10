@@ -4,14 +4,10 @@
   "description": "auth services",
   "author": "Rex Isaac Raphael",
   "dependencies": {
-    "@mikro-orm/migrations": "^4.5.9",
-    "fastify-cookie": "^5.3.1"
-  },
-  "mikro-orm": {
-    "useTsNode": false,
-    "configPaths": [
-      "./src/mikro-orm.config.ts",
-      "./src/mikro-orm.config.js"
-    ]
+    "fastify-cookie": "^5.6.0",
+    "connect-redis": "^6.1.1",
+    "cookie-parser": "^1.4.6",
+    "express-session": "^1.17.2",
+    "@apollo/subgraph": "^0.3.1"
   }
 }

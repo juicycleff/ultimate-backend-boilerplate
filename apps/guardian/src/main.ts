@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { UBServiceFactory } from '@ultimate-backend/core';
 
 import { AppModule } from './app/app.module';
+import { PrismaService } from '@ub-boilerplate/persistence';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const prismaService: PrismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   await UBServiceFactory.create(app, false)
     .withSwagger()
@@ -25,6 +28,8 @@ async function bootstrap() {
       },
     })
     .withCookie()
+    .withSession(true)
+    .withPoweredBy()
     .start();
 }
 

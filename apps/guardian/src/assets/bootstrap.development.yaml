@@ -9,6 +9,16 @@ setup:
     secret: 'my-secret-looking-good'
     domain: 127.0.0.1
     path: /
+  session:
+    secret: 'my-secret-looking-good'
+    name: 'idtoken'
+    saveUninitialized: false
+    resave: true
+    cookie:
+      secret: 'my-secret-looking-good'
+      domain: localhost
+      path: /
+      maxAge: 60000
     # signed: false
     # sameSite: lax
 
@@ -40,12 +50,6 @@ loadbalancer:
       name: 'example'
     - strategy: 'RoundRobinStrategy'
       name: 'adv-example'
-
-orm:
-  mikro:
-    type: 'postgresql'
-    clientUrl: 'postgres://kratos:secret@localhost:5432/guardian_db?sslmode=disable&max_conns=20&max_idle_conns=4'
-    dbName: 'guardian_db'
 
 kratos:
   config:

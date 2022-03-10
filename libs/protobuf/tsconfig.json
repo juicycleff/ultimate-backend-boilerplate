@@ -2,6 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
   "references": [
     {
       "path": "./tsconfig.lib.json"

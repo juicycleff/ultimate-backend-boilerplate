@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  migrator:
+  nighthawk:
     image: 'ub-boilerplate/nighthawk-migrate-cmd'
     build:
       context: .
@@ -14,11 +14,11 @@ services:
       - kratos
       - postgresd
     ports:
-      - '5000:5000'
+      - '5556:5556'
     container_name: nighthawk-cmd
     environment:
-      - REDIS_URL=redis://redis:6379
-      - DATABASE_URL="postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema"
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
     depends_on:
       - kratos
       - redis
@@ -42,11 +42,13 @@ services:
       - '5000:5000'
     container_name: guardian-svc
     environment:
-      - REDIS_URL=redis://redis:6379
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
     depends_on:
       - kratos
       - redis
       - postgresd
+      - nighthawk
     networks:
       - intranet
 
@@ -58,15 +60,18 @@ services:
         APP_NAME: organisation
         PORT: 5001
       dockerfile: .deploy/base.Dockerfile
-
     ports:
       - '5001:5001'
     container_name: organisation-svc
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
     links:
       - redis
     depends_on:
       - kratos
       - redis
+      - nighthawk
     networks:
       - intranet
 
@@ -78,15 +83,18 @@ services:
         APP_NAME: billing
         PORT: 5002
       dockerfile: .deploy/base.Dockerfile
-
     links:
       - redis
     ports:
       - '5002:5002'
     container_name: billing-svc
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
     depends_on:
       - kratos
       - redis
+      - nighthawk
     networks:
       - intranet
 
@@ -98,7 +106,9 @@ services:
         APP_NAME: application
         PORT: 3333
       dockerfile: .deploy/base.Dockerfile
-
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
     links:
       - redis
     ports:
@@ -107,6 +117,7 @@ services:
     depends_on:
       - kratos
       - redis
+      - nighthawk
     networks:
       - intranet
 

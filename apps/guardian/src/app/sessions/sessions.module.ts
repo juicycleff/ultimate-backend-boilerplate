@@ -5,11 +5,13 @@ import { SessionMutationsResolver } from './session-mutations.resolver';
 import { SessionsController } from './sessions.controller';
 import { SessionsResolver } from './sessions.resolver';
 import { SessionsService } from './sessions.service';
+import { SessionCommandHandlers } from './commands';
 
 @Module({
   imports: [PasswordModule],
   controllers: [SessionsController],
   providers: [
+    ...SessionCommandHandlers,
     SessionsResolver,
     SessionsService,
     SessionMutationsResolver,
@@ -18,5 +20,6 @@ import { SessionsService } from './sessions.service';
       help: 'metric_help',
     }),
   ],
+  exports: [SessionsService],
 })
 export class SessionsModule {}

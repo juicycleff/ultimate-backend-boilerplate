@@ -6,12 +6,18 @@ import { AccountsQueriesResolver } from './accounts-queries.resolver';
 import { AccountsController } from './accounts.controller';
 import { AccountsResolver } from './accounts.resolver';
 import { AccountsService } from './accounts.service';
-import { PersistenceModule } from '@ub-boilerplate/persistence';
+import { PersistenceModule, UserProfileRepository } from '@ub-boilerplate/persistence';
+import { AccountCommandHandlers } from './commands';
+import { AccountQueryHandlers } from './queries';
+import { SessionsModule } from '../sessions/sessions.module';
 
 @Module({
-  imports: [PersistenceModule, PasswordModule],
+  imports: [PersistenceModule, PasswordModule, SessionsModule],
   providers: [
     AccountsService,
+    ...AccountCommandHandlers,
+    ...AccountQueryHandlers,
+    UserProfileRepository,
     AccountsResolver,
     AccountsMutationResolver,
     AccountsQueriesResolver,

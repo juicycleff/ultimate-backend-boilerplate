@@ -1,16 +1,17 @@
 import { Args, ResolveField, Resolver } from '@nestjs/graphql';
+import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
 import { AccountQueries } from './account.types';
 import { AccountsService } from './accounts.service';
-import { AccountAvailableRequest } from './commands';
-import { AccountResponse } from './queries';
-import { Auth, Identity, KratosService, Secure } from '@ub-boilerplate/common';
-import { JSONObjectResolver } from 'graphql-scalars';
+import { AccountAvailableRequest, AccountResponse } from './dtos';
+import { QueryBus } from '@nestjs/cqrs';
+import { GetAccountQuery } from './queries';
 
 @Resolver(() => AccountQueries)
 export class AccountsQueriesResolver {
   constructor(
     private readonly accountService: AccountsService,
     private readonly kratos: KratosService,
+    private readonly queryBus: QueryBus,
   ) {}
 
   /**
@@ -20,8 +21,9 @@ export class AccountsQueriesResolver {
   @ResolveField(() => AccountResponse, {
     description: 'Retrieves the current logged in account or throws a 401 response',
   })
-  async currentAccount(@Auth() identity: Identity): Promise<AccountResponse> {
-    return this.kratos.whoami(identity.sessionId);
+  async me(@Auth() identity: Identity): Promise<AccountResponse> {
+    const rsp = await this.queryBus.execute(new GetAccountQuery(identity.sessionId));
+    return rsp.identity;
   }
 
   /**

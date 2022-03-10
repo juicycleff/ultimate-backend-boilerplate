@@ -12,6 +12,11 @@ There are also many [community plugins](https://nx.dev/nx-community) you could a
 
 Install pnpm `npm i -g pnpm`.
 
+Install Docker
+
+## Run
+
+Install pnpm `docker compose up`.
 
 ## Generate an application
 

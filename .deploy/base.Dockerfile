@@ -30,11 +30,11 @@ ARG APP_NAME
 WORKDIR /usr/src/app
 COPY apps apps
 COPY libs libs
+COPY prisma prisma
 COPY package*.json pnpm-lock.yaml nx.json workspace.json ub.json tsconfig.*.json ./
 
 RUN npm i pnpm -g
 RUN pnpm i --frozen-lockfile -s
-
 
 #######################################################################################
 FROM node:16-alpine AS builder
@@ -52,7 +52,7 @@ RUN alias pnx="pnpm exec nx --"
 RUN nx run persistence:gen
 # RUN nx run persistence:migrate
 
-RUN nx build $APP_NAME --configuration=production --generatePackageJson --with-deps
+RUN nx build $APP_NAME --configuration=production --generatePackageJson
 
 
 #######################################################################################
@@ -67,13 +67,17 @@ COPY --from=utils /tini /sbin/tini
 
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
+COPY --from=builder /usr/src/app/libs/persistence libs/persistence
 
 ENV NODE_ENV production
 
 RUN npm i pnpm -g
 # install requird deps
 RUN pnpm i --prod
+RUN pnpm i @prisma/client --prod
 RUN pnpm add tslib --prod
+
+RUN pnpm dlx prisma generate --schema=./libs/persistence/schema.prisma
 
 EXPOSE $PORT
 

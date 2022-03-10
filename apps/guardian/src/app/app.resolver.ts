@@ -7,7 +7,7 @@ import { GuardianConfig } from './common/guardian.config';
 @ObjectType()
 class AppType {}
 
-@Resolver((of) => AppType)
+@Resolver(() => AppType)
 export class AppResolver {
   constructor(private readonly appService: AppService) {}
 

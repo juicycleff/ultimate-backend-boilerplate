@@ -1,8 +1,7 @@
 import { Args, ResolveField, Resolver } from '@nestjs/graphql';
-import { PasswordScoreRequest } from './commands';
 import { PasswordService } from './password.service';
 import { PasswordMutations } from './password.types';
-import { PasswordScoreEnum } from './queries';
+import { PasswordScoreEnum, PasswordScoreRequest } from './dtos';
 
 @Resolver(() => PasswordMutations)
 export class PasswordMutationsResolver {

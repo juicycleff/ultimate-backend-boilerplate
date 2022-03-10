@@ -1,23 +1,40 @@
 import { ApolloError } from 'apollo-server-fastify';
-import { Args, ResolveField, Resolver } from '@nestjs/graphql';
-import { Auth, Identity, Secure } from '@ub-boilerplate/common';
+import { Args, Context, ResolveField, Resolver } from '@nestjs/graphql';
+import { CommandBus } from '@nestjs/cqrs';
+import { Auth, GqlContext, Identity, Secure } from '@ub-boilerplate/common';
 
 import { AccountMutations } from './account.types';
 import { AccountsService } from './accounts.service';
-import { CreateAccountRequest, UpdateAccountRequest } from './commands';
-import { AccountResponse } from './queries';
+import {
+  AccountResponse,
+  CreateAccountRequest,
+  UpdateAccountPasswordRequest,
+  UpdateAccountRequest,
+} from './dtos';
+import {
+  CreateAccountCommand,
+  RequestAccountRecoveryCommand,
+  UpdateAccountCommand,
+  UpdateAccountPasswordCommand,
+} from './commands';
+import { HttpException } from '@nestjs/common';
 
 @Resolver(() => AccountMutations)
 export class AccountsMutationResolver {
-  constructor(private readonly accountService: AccountsService) {}
+  constructor(
+    private readonly accountService: AccountsService,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @ResolveField(() => AccountResponse)
   async create(@Args('input') input: CreateAccountRequest): Promise<AccountResponse> {
     try {
-      const resp = await this.accountService.create(input);
-      return resp.toResponse();
+      return await this.commandBus.execute(new CreateAccountCommand(input));
     } catch (e) {
-      throw new ApolloError(e);
+      if (e instanceof HttpException) {
+        throw new ApolloError(e.getResponse()[0].text, (e as any).status);
+      }
+      throw new ApolloError(e.message);
     }
   }
 
@@ -28,17 +45,36 @@ export class AccountsMutationResolver {
     @Auth() identity: Identity,
   ): Promise<AccountResponse> {
     try {
-      return this.accountService.update(identity.sessionId, input);
+      return this.commandBus.execute(new UpdateAccountCommand(identity.sessionId, input));
     } catch (e) {
       throw new ApolloError(e);
     }
   }
 
-  @Secure({ claim: 'service' })
   @ResolveField(() => Boolean)
-  async expirePassword(@Args('accountId') accountId: string): Promise<boolean> {
+  async requestAccountRecovery(
+    @Args('email') email: string,
+    @Auth() identity: Identity,
+  ): Promise<boolean> {
     try {
-      return await this.accountService.passwordExpire(accountId);
+      return this.commandBus.execute(
+        new RequestAccountRecoveryCommand(email, identity.sessionId),
+      );
+    } catch (e) {
+      throw new ApolloError(e);
+    }
+  }
+
+  @ResolveField(() => Boolean)
+  async updatePassword(
+    @Args('input') input: UpdateAccountPasswordRequest,
+    @Auth() identity: Identity,
+    @Context() ctx: GqlContext,
+  ): Promise<boolean> {
+    try {
+      return this.commandBus.execute(
+        new UpdateAccountPasswordCommand(identity, input, ctx),
+      );
     } catch (e) {
       throw new ApolloError(e);
     }

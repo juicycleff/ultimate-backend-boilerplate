@@ -1,1 +1,2 @@
-export * from './account.command';
+export * from './impl';
+export * from './handlers';

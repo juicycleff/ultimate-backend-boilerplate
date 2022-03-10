@@ -4,6 +4,7 @@ import { corsApolloOptions } from '@ub-boilerplate/common';
 import { JSONResolver, JSONObjectResolver } from 'graphql-scalars';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { BootConfig } from '@ultimate-backend/bootstrap';
+import { ApolloFederationDriver } from '@nestjs/apollo';
 
 @Injectable()
 export class GqlConfigProvider implements GqlOptionsFactory {
@@ -25,11 +26,12 @@ export class GqlConfigProvider implements GqlOptionsFactory {
           connection,
         };
       },
-      autoTransformHttpErrors: true,
+      // autoTransformHttpErrors: true,
+      driver: ApolloFederationDriver,
       useGlobalPrefix: true,
-      cors: corsApolloOptions,
+      // cors: corsApolloOptions,
       resolvers: { JSON: JSONObjectResolver, JSONObject: JSONResolver },
-      cache: new RedisCache(redisOptions),
+      // cache: new RedisCache(redisOptions),
     };
   }
 }

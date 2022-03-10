@@ -1,0 +1,34 @@
+{
+  "projectType": "application",
+  "root": "apps/shardow",
+  "sourceRoot": "apps/shardow",
+  "targets": {
+    "build": {
+      "executor": "@nx-go/nx-go:build",
+      "options": {
+        "outputPath": "dist/apps/shardow",
+        "main": "apps/shardow/main.go"
+      }
+    },
+    "build-p": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": ["go build -buildmode=plugin -o ../../dist/apps/shardow/shardow.so"],
+        "cwd": "apps/shardow"
+      }
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "main": "apps/shardow/main.go"
+      }
+    },
+    "test": {
+      "executor": "@nx-go/nx-go:test"
+    },
+    "lint": {
+      "executor": "@nx-go/nx-go:lint"
+    }
+  },
+  "tags": []
+}

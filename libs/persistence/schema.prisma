@@ -8,6 +8,12 @@ generator client {
 }
 
 model UserProfile {
-  id          Int     @id @default(autoincrement())
+  id          String @id @default(cuid())
   accountId   String  @unique
+}
+
+
+model Billing {
+  id          String      @id @default(cuid())
+  userId      String      @unique
 }

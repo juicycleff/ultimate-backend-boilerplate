@@ -31,6 +31,7 @@ ARG OPTIONS
 WORKDIR /usr/src/app
 COPY apps apps
 COPY libs libs
+COPY prisma prisma
 COPY package*.json pnpm-lock.yaml nx.json workspace.json ub.json tsconfig.*.json ./
 
 RUN npm i pnpm -g
@@ -54,7 +55,7 @@ RUN alias pnx="pnpm exec nx --"
 RUN nx run persistence:gen
 # RUN nx run persistence:migrate
 
-RUN nx build $APP_NAME --configuration=production --generatePackageJson --with-deps
+RUN nx build $APP_NAME --configuration=production --generatePackageJson
 
 
 #######################################################################################
@@ -69,8 +70,10 @@ COPY --from=utils /user/group /user/passwd /etc/
 COPY --from=utils /tini /sbin/tini
 
 WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist/apps/$APP_NAME .
 COPY --from=builder /usr/src/app/libs libs
+COPY --from=builder /usr/src/app/prisma prisma
 
 ENV NODE_ENV production
 
@@ -87,4 +90,7 @@ ENTRYPOINT ["tini", "--"]
 
 # RUN ECHO $COM_ARG > "node main.js $OPTIONS"
 # todo: making  this dynamic
-CMD node main.js migrate db
+CMD sudo chown -R 65534:65534 "/.npm"
+CMD pnpm dlx prisma migrate dev --name init --schema=./libs/persistence/schema.prisma --preview-feature
+
+CMD node main.js start studio

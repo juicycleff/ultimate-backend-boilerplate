@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
@@ -18,6 +19,7 @@
       "@ub-boilerplate/common": ["libs/common/src/index.ts"],
       "@ub-boilerplate/common/*": ["libs/common/src/lib/*"],
       "@ub-boilerplate/persistence": ["libs/persistence/src/index.ts"],
+      "@ub-boilerplate/persistence/*": ["libs/persistence/src/lib/*"],
       "@ub-boilerplate/protobuf": ["libs/protobuf/src/index.ts"],
       "@ub-boilerplate/protobuf/*": ["libs/protobuf/src/lib/*"],
       "@ub/systems-cli": ["libs/systems-cli/src/index.ts"]

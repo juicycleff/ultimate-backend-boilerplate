@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
     if (isPlainObject(ctx)) {
       ctx.req.identity = new Identity(
         ctx.req as any,
-        ctx.reply as any,
+        (ctx.reply ?? ctx.res) as any,
         this.config,
         this.boot,
       );

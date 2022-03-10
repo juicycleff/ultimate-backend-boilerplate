@@ -14,4 +14,9 @@ export class UserProfileRepository {
       where: userWhereUniqueInput,
     });
   }
+
+  // create user
+  async createUser(args: Prisma.UserProfileCreateArgs): Promise<UserProfileModel | null> {
+    return this.prisma.userProfile.create(args);
+  }
 }

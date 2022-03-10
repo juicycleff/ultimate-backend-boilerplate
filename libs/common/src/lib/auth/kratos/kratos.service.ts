@@ -9,7 +9,7 @@ import {
 } from '@ory/kratos-client';
 import { axios } from '../../clients';
 import { ApolloError } from 'apollo-server-fastify';
-import { AccountIdentity } from '../account.type';
+import { AccountIdentity, AccountIdentityToken } from '../account.type';
 
 @Injectable()
 export class KratosService implements OnModuleInit {
@@ -27,7 +27,7 @@ export class KratosService implements OnModuleInit {
   }
 
   public get metadata_api(): MetadataApi {
-    if (!this._kratos) throw new Error('Kratos metadata API not initialized');
+    if (!this._metadata) throw new Error('Kratos metadata API not initialized');
     return this._metadata;
   }
 
@@ -36,13 +36,15 @@ export class KratosService implements OnModuleInit {
       this._kratos = new V0alpha2Api(
         new Configuration(this.options.config),
         this.options.config?.basePath || '',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         axios,
       );
-    }
-    if (this.options.admin) {
       this._metadata = new MetadataApi(
-        new Configuration(this.options.admin),
-        this.options.admin?.basePath || '',
+        new Configuration(this.options.config),
+        this.options.config?.basePath || '',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         axios,
       );
     }
@@ -65,7 +67,7 @@ export class KratosService implements OnModuleInit {
     identifier: string,
     password: string,
     options?: { csrfToken: string; withRefresh: boolean; flowOption: any },
-  ) {
+  ): Promise<{ session_token: string; session: AccountIdentityToken }> {
     try {
       const { data: flow } =
         await this.public_api.initializeSelfServiceLoginFlowWithoutBrowser(
@@ -80,7 +82,10 @@ export class KratosService implements OnModuleInit {
         method: SessionAuthenticationMethodMethodEnum.Password,
       });
 
-      return rsp.data;
+      return {
+        session_token: rsp.data.session_token,
+        session: new AccountIdentityToken(rsp.data.session),
+      };
     } catch (e) {
       if (e?.response?.data?.ui?.messages) {
         throw new HttpException(e.response.data.ui.messages, 400);
@@ -91,8 +96,7 @@ export class KratosService implements OnModuleInit {
 
   /**
    * @description Login with totp. Basically a wrapper around kratos
-   * @param identifier
-   * @param password
+   * @param totpCode
    * @param options
    */
   async totpLogin(
@@ -123,8 +127,8 @@ export class KratosService implements OnModuleInit {
 
   /**
    * @description Login with totp. Basically a wrapper around kratos
-   * @param identifier
-   * @param password
+   * @param provider
+   * @param traits
    * @param options
    */
   async oidcLogin(
@@ -165,25 +169,25 @@ export class KratosService implements OnModuleInit {
     traits: Record<string, any>,
     password: string,
     options?: { csrfToken: string; flowOption: any },
-  ) {
+  ): Promise<AccountIdentity> {
     try {
       const { data: flow } =
         await this.public_api.initializeSelfServiceRegistrationFlowWithoutBrowser(
           options?.flowOption,
         );
 
-      for (const node of flow.ui.nodes) {
-        // todo: validate input
-      }
+      // for (const node of flow.ui.nodes) {
+      //   // todo: validate input
+      // }
 
       const rsp = await this.public_api.submitSelfServiceRegistrationFlow(flow.id, {
         password: password,
         csrf_token: options?.csrfToken,
         traits,
-        method: 'Password',
+        method: 'password',
       });
 
-      return rsp.data;
+      return new AccountIdentity(rsp.data.identity);
     } catch (e) {
       if (e?.response?.data?.ui?.messages) {
         throw new HttpException(e.response.data.ui.messages, 400);
@@ -252,7 +256,7 @@ export class KratosService implements OnModuleInit {
 
       const rsp = await this.public_api.submitSelfServiceRecoveryFlow(flow.id, token, {
         method: 'link',
-        csrf_token: options.csrfToken,
+        csrf_token: options?.csrfToken,
         email: email,
       });
 
@@ -351,10 +355,10 @@ export class KratosService implements OnModuleInit {
     xSessionToken?: string,
     cookie?: string,
     options?: any,
-  ): Promise<AccountIdentity> {
+  ): Promise<AccountIdentityToken> {
     try {
       const rsp = await this.public_api.toSession(xSessionToken, cookie, options);
-      return new AccountIdentity(rsp.data.identity);
+      return new AccountIdentityToken(rsp.data);
     } catch (e) {
       if (e?.response?.data?.error) {
         const error = e?.response?.data?.error;

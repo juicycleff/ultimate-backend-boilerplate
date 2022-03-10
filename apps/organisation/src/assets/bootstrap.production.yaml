@@ -26,9 +26,3 @@ swagger:
         type: 'http'
         scheme: 'bearer'
         name: 'Authorization'
-
-orm:
-  mikro:
-    type: 'postgresql'
-    clientUrl: 'postgres://kratos:secret@postgresd:5432/organisation_db?sslmode=disable&max_conns=20&max_idle_conns=4'
-    dbName: 'organisation_db'

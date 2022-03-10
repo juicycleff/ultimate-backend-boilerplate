@@ -8,8 +8,6 @@ import { AppService } from './app.service';
 import { KubernetesModule } from '@ultimate-backend/kubernetes';
 import { OrganisationsModule } from './organisations/organisations.module';
 import { OrganisationMembersModule } from './organisation-members/organisation-members.module';
-import { MikroOrmModule } from '@ub-boilerplate/common/database/mikro-orm';
-import { MikroDBConfig } from './common/config';
 import { SharedServiceModule } from '@ub-boilerplate/common/modules';
 
 const sharedImports =
@@ -17,9 +15,6 @@ const sharedImports =
 
 @Module({
   imports: [
-    MikroOrmModule.forRootAsync({
-      useClass: MikroDBConfig,
-    }),
     BootstrapModule.forRoot({
       filePath: path.resolve(__dirname, 'assets/bootstrap.yaml'),
       enableEnv: true,

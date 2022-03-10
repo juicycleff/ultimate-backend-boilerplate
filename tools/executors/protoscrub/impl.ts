@@ -9,6 +9,7 @@ export interface ProtoScrubExecutorOptions {
   outputPath: string;
   packagePath: string;
   rewriteProtobufName: boolean;
+  isWindows?: boolean;
 }
 
 async function getBuildFilePaths(): Promise<Record<string, string[]>> {
@@ -69,6 +70,14 @@ async function generateTSFromProto(inputPath: string, outputPath: string) {
   );
 }
 
+async function generateTSFromProtoWin(inputPath: string, outputPath: string) {
+  const src_dir = `${inputPath}/*.proto`;
+  const dest_dir = outputPath;
+  await promisify(exec)(
+    `protoc --plugin=node_modules/ts-proto/protoc-gen-ts_proto.cmd --ts_proto_opt=lowerCaseServiceMethods=true,context=false,oneof=unions,useOptionals=true,env=node,returnObservable=false,stringEnums=true,addGrpcMetadata=true,addNestjsRestParameter=true,nestJs=true --ts_proto_out=${dest_dir} ${src_dir}`,
+  );
+}
+
 export default async function protoScrubExecutor(
   options: ProtoScrubExecutorOptions,
   context: ExecutorContext,
@@ -93,7 +102,10 @@ export default async function protoScrubExecutor(
   }
 
   try {
-    await generateTSFromProto(protoOutputPath, '.');
+    if (options.isWindows && options.isWindows === true)
+      await generateTSFromProtoWin(protoOutputPath, '.');
+    else await generateTSFromProto(protoOutputPath, '.');
+
     logger.log('Generated typescript files from proto files');
     return { success: true };
   } catch (e) {
