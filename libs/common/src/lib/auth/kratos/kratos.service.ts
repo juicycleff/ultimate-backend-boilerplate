@@ -324,6 +324,23 @@ export class KratosService implements OnModuleInit {
     }
   }
 
+
+  /**
+   * @description Delete account. Basically a wrapper around kratos
+   * @param id
+   */
+  async delete(id: string) {
+    try {
+      const rsp = await this.public_api.adminDeleteIdentity(id);
+      return rsp.data;
+    } catch (e) {
+      if (e?.response?.data?.ui?.messages) {
+        throw new HttpException(e.response.data.ui.messages, 400);
+      }
+      throw e;
+    }
+  }
+
   /**
    * @description Get Server health. Basically a wrapper around kratos
    */
