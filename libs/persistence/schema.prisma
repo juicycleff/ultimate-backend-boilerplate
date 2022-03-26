@@ -5,15 +5,61 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity", "fullTextSearch", "extendedIndexes"]
 }
 
 model UserProfile {
-  id          String @id @default(cuid())
-  accountId   String  @unique
+  id             String @id @default(cuid())
+  accountId      String  @unique
+
+  firstName      String
+  lastName       String
+
+  email          String
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  orgMemberships OrganisationMembers[]
+}
+
+model Organisations {
+  id             String @id @default(cuid())
+  name           String
+  members        OrganisationMembers[]
+  slug           String @unique
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model OrganisationMembers {
+  id             String @id @default(cuid())
+  email          String
+  status         InvitationStatus @default(PENDING)
+
+  org            Organisations @relation(fields: [orgId], references: [id])
+  orgId          String
+
+  user           UserProfile? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([orgId, userId], name: "memberUser")
 }
 
 
-model Billing {
+model Billings {
   id          String      @id @default(cuid())
-  userId      String      @unique
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+enum InvitationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

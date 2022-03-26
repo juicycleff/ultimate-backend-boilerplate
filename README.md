@@ -6,8 +6,6 @@ This project was generated using [UB](https://github.com/juicycleff/ultimate-bac
 
 Coming soon
 
-There are also many [community plugins](https://nx.dev/nx-community) you could add.
-
 ## Get started
 
 Install pnpm `npm i -g pnpm`.
@@ -16,7 +14,7 @@ Install Docker
 
 ## Run
 
-Install pnpm `docker compose up`.
+Install pnpm `docker compose up`.  Note only default docker compose file is updated and working.
 
 ## Generate an application
 

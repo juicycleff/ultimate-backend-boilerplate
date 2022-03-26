@@ -11,7 +11,7 @@
     "nx.json": "*"
   },
   "affected": {
-    "defaultBase": "master"
+    "defaultBase": "main"
   },
   "npmScope": "ub-boilerplate",
   "tasksRunnerOptions": {
@@ -28,6 +28,5 @@
   },
   "cli": {
     "defaultCollection": "@nrwl/nest"
-  },
-  "defaultProject": "organisation"
+  }
 }

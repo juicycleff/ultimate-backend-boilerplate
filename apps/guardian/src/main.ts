@@ -28,7 +28,7 @@ async function bootstrap() {
       },
     })
     .withCookie()
-    .withSession(true)
+    .withSession()
     .withPoweredBy()
     .start();
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigValue } from '@ultimate-backend/config';
 import { CreateSessionRequest, SessionResponse } from './dtos';
 import { Identity, KratosService, GqlContext } from '@ub-boilerplate/common';
@@ -41,8 +41,10 @@ export class SessionsService {
    * @param ctx
    */
   async delete(identity: Identity, ctx: GqlContext): Promise<boolean> {
-    identity.forget(ctx);
+    if(!identity.sessionId) throw new BadRequestException('User does not have a session');
+
     await this.kratos.logout(identity.sessionId);
+    identity.forget(ctx);
     return true;
   }
 }

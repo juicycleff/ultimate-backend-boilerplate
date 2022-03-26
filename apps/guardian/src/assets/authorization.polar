@@ -1,18 +1,22 @@
-role(actor: String, "employee") if
-    actor = "alice" or
-    actor = "bhavik" or
-    actor = "cora";
+allow(actor, action, resource) if
+  has_permission(actor, action, resource);
 
-role(actor: String, "accountant") if
-    actor = "deirdre" or
-    actor = "ebrahim" or
-    actor = "frantz";
+actor User {}
 
-role(actor: String, "admin") if
-    actor = "greta" or
-    actor = "han" or
-    actor = "iqbal";
+resource Organisation {
+  permissions = ["read", "write", "delete", "update"];
+  roles = ["contributor", "maintainer", "admin"];
 
-allow(actor: String, "GET", perms: Permission) if
-    perms.userId = actor and
-    perms.canRead = true;
+  "read" if "contributor";
+  "push" if "maintainer";
+  "delete" if "admin";
+
+  "maintainer" if "admin";
+  "contributor" if "maintainer";
+}
+
+# This rule tells Oso how to fetch roles for a repository
+has_role(actor: User, role_name: String, org: Organisation) if
+  role in actor.roles and
+  role_name = role.name and
+  org = role.repository;

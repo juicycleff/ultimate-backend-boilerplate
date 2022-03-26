@@ -22,7 +22,8 @@ export class AccountsService {
     private readonly kratos: KratosService,
     private readonly sessionsService: SessionsService,
     private readonly userProfileRepository: UserProfileRepository,
-  ) {}
+  ) {
+  }
 
   async create(cmd: CreateAccountRequest): Promise<AccountResponse> {
     try {
@@ -43,8 +44,10 @@ export class AccountsService {
         },
         password,
       );
+
       await this.userProfileRepository.createUser({
-        data: { accountId: rsp.id },
+        data: { accountId: rsp.id, firstName: cmd.firstName, lastName: cmd.lastName, email: cmd.email },
+        select: {id: true},
       });
       return rsp;
     } catch (e) {

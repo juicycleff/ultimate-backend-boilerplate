@@ -31,8 +31,11 @@ export class Identity {
     const secConfig = this.config.get('security') as SecurityConfig;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (this.req.session && this.req.session[secConfig.cookieId])
+    if (this.req.session && this.req.session[secConfig.cookieId]) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       return this.req.session[secConfig.cookieId];
+    }
     if (this.req.cookies[secConfig.cookieId]) return this.req.cookies[secConfig.cookieId];
     const authToken = (this.req.headers['Authorization'] ??
       this.req.headers['authorization']) as string;

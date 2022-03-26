@@ -6,13 +6,11 @@ import { UserProfile as UserProfileModel, Prisma } from '@prisma/client';
 export class UserProfileRepository {
   constructor(private prisma: PrismaService) {}
 
-  // get a profile by ID or account ID
+  // get a user
   async user(
-    userWhereUniqueInput: Prisma.UserProfileWhereUniqueInput,
+    args: Prisma.UserProfileFindUniqueArgs,
   ): Promise<UserProfileModel | null> {
-    return this.prisma.userProfile.findUnique({
-      where: userWhereUniqueInput,
-    });
+    return this.prisma.userProfile.findUnique(args);
   }
 
   // create user

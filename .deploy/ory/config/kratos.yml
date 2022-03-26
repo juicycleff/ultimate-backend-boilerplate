@@ -130,6 +130,9 @@ selfservice:
 
     link:
       enabled: true
+      config:
+        # Defines how long the verification or the recovery link is valid for (default 1h)
+        lifespan: 15m
 
 serve:
   public:

@@ -4,10 +4,10 @@
   "description": "auth services",
   "author": "Rex Isaac Raphael",
   "dependencies": {
-    "fastify-cookie": "^5.6.0",
     "connect-redis": "^6.1.1",
     "cookie-parser": "^1.4.6",
     "express-session": "^1.17.2",
-    "@apollo/subgraph": "^0.3.1"
+    "@apollo/subgraph": "^0.3.1",
+    "tslib": "^2.3.1"
   }
 }

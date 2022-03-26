@@ -324,7 +324,6 @@ export class KratosService implements OnModuleInit {
     }
   }
 
-
   /**
    * @description Delete account. Basically a wrapper around kratos
    * @param id

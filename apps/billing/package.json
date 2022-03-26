@@ -4,8 +4,10 @@
   "description": "billing services",
   "author": "Rex Isaac Raphael",
   "dependencies": {
-    "@nestjs/graphql": "^9.0.4",
+    "fastify-cookie": "^5.6.0",
     "@apollo/federation": "^0.29.0",
-    "apollo-server-fastify": "^3.6.3"
+    "apollo-server-fastify": "^3.6.3",
+    "@apollo/subgraph": "^0.3.1",
+    "tslib": "^2.3.1"
   }
 }

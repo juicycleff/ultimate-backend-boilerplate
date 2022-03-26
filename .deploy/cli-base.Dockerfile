@@ -52,10 +52,10 @@ RUN pnpm i @nrwl/cli -g
 ENV NODE_ENV production
 RUN alias pnx="pnpm exec nx --"
 
-RUN nx run persistence:gen
+RUN pnpm dlx nx run persistence:gen
 # RUN nx run persistence:migrate
 
-RUN nx build $APP_NAME --configuration=production --generatePackageJson
+RUN npx nx build $APP_NAME --configuration=production --generatePackageJson
 
 
 #######################################################################################

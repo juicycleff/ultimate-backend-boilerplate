@@ -44,15 +44,15 @@ WORKDIR /usr/src/app
 COPY --from=dev-dependencies /usr/src/app /usr/src/app
 
 RUN npm i -g pnpm
-RUN pnpm i @nrwl/cli -g
+RUN npm i @nrwl/cli -g
 
 ENV NODE_ENV production
 RUN alias pnx="pnpm exec nx --"
 
-RUN nx run persistence:gen
+RUN  pnpm dlx nx run persistence:gen
 # RUN nx run persistence:migrate
 
-RUN nx build $APP_NAME --configuration=production --generatePackageJson
+RUN npx nx build $APP_NAME --configuration=production --generatePackageJson
 
 
 #######################################################################################
@@ -74,8 +74,7 @@ ENV NODE_ENV production
 RUN npm i pnpm -g
 # install requird deps
 RUN pnpm i --prod
-RUN pnpm i @prisma/client --prod
-RUN pnpm add tslib --prod
+RUN pnpm i @prisma/client tslib --prod
 
 RUN pnpm dlx prisma generate --schema=./libs/persistence/schema.prisma
 

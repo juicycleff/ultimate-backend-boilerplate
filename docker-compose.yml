@@ -52,29 +52,6 @@ services:
     networks:
       - intranet
 
-  organisation:
-    image: 'ub-boilerplate/organisation'
-    build:
-      context: .
-      args:
-        APP_NAME: organisation
-        PORT: 5001
-      dockerfile: .deploy/base.Dockerfile
-    ports:
-      - '5001:5001'
-    container_name: organisation-svc
-    environment:
-      REDIS_URL: redis://redis:6379
-      DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
-    links:
-      - redis
-    depends_on:
-      - kratos
-      - redis
-      - nighthawk
-    networks:
-      - intranet
-
   billing:
     image: 'ub-boilerplate/billing'
     build:
@@ -91,6 +68,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       DATABASE_URL: 'postgresql://kratos:secret@postgresd:5432/guardian_db?schema=ub-schema'
+      UB_ENABLE_K8S: false
     depends_on:
       - kratos
       - redis

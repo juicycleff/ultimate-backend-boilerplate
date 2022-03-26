@@ -6,7 +6,6 @@
     "common": "libs/common",
     "guardian": "apps/guardian",
     "nighthawk": "apps/nighthawk",
-    "organisation": "apps/organisation",
     "persistence": "libs/persistence",
     "protobuf": "libs/protobuf",
     "shardow": "apps/shardow"

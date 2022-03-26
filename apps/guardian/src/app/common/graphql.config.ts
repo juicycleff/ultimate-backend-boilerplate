@@ -16,6 +16,7 @@ export class GqlConfigProvider implements GqlOptionsFactory {
     return {
       autoSchemaFile: true,
       fieldResolverEnhancers: ['guards'],
+
       context: ({ req, res, payload, connection, request, reply }) => {
         return {
           req: request ?? req,
@@ -29,7 +30,9 @@ export class GqlConfigProvider implements GqlOptionsFactory {
       // autoTransformHttpErrors: true,
       driver: ApolloFederationDriver,
       useGlobalPrefix: true,
-      // cors: corsApolloOptions,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      cors: corsApolloOptions,
       resolvers: { JSON: JSONObjectResolver, JSONObject: JSONResolver },
       // cache: new RedisCache(redisOptions),
     };
