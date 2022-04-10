@@ -4,7 +4,7 @@ import { BaseContainerAppConfig } from '../base.config';
 
 export interface OrganisationAppArgs extends BaseContainerAppConfig {}
 
-export class OrganisationApp extends pulumi.ComponentResource {
+export class KrakendApp extends pulumi.ComponentResource {
   public appUrl: pulumi.Output<string>;
 
   constructor(

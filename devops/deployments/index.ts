@@ -1,5 +1,4 @@
 import { GuardianApp } from './apps/guardian.deployment';
-import { OrganisationApp } from './apps/organisation.deployment';
 import { BillingApp } from './apps/billing.deployment';
 
 import { RedisApp } from './thirdparty/redis.deployment';
@@ -20,15 +19,6 @@ export function getDeployments(cluster: any, imageTag: string) {
     new GuardianApp(cluster.name, {
       provider: cluster.provider,
       imageTag: imageTag,
-      staticAppIP: cluster.staticAppIP,
-    }),
-  );
-
-  // Organisation app
-  instances.push(
-    new OrganisationApp(cluster.name, {
-      provider: cluster.provider,
-      imageTag,
       staticAppIP: cluster.staticAppIP,
     }),
   );
